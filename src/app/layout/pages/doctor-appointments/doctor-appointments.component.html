@@ -1,0 +1,63 @@
+<div class="container mt-5">
+  <button class="btn btn-secondary mb-3" (click)="goBack()">&larr; Back to Doctors</button>
+
+  <h2>Available Appointments</h2>
+
+  <div *ngIf="isLoading" class="text-center">
+    <p>Loading appointments...</p>
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!isLoading && !error && appointments.length > 0">
+    <!-- Display Doctor Info if needed/available -->
+    <!-- <p>Appointments for Dr. [Doctor Name]</p> -->
+
+    <div class="appointment-slots">
+      <p>Please select an available time slot:</p>
+      <div class="list-group">
+        <button *ngFor="let appt of appointments" 
+                type="button" 
+                class="list-group-item list-group-item-action" 
+                [class.active]="appt.id === selectedAppointmentId" 
+                (click)="selectAppointment(appt.id)">
+          <!-- Adjust display based on actual API response fields for appointment time/date -->
+          {{ appt.appointmentDate | date:
+'mediumDate' }} - {{ appt.startTime | date:
+'shortTime' }} to {{ appt.endTime | date:
+'shortTime' }}
+          <!-- Example: {{ appt.dateTime | date:
+'fullDate' }} at {{ appt.dateTime | date:
+'shortTime' }} -->
+          <!-- Example: {{ appt.date }} - {{ appt.timeSlot }} -->
+        </button>
+      </div>
+    </div>
+
+    <div class="booking-section mt-4">
+      <div class="mb-3">
+        <label for="notes" class="form-label">Notes (Optional):</label>
+        <textarea id="notes" class="form-control" rows="3" [(ngModel)]="notes"></textarea>
+      </div>
+
+      <div *ngIf="bookingError" class="alert alert-danger">
+        {{ bookingError }}
+      </div>
+
+      <button class="btn btn-primary" (click)="proceedToPayment()" [disabled]="!selectedAppointmentId || isBooking">
+        <span *ngIf="isBooking" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        {{ isBooking ? 
+'Processing...' : 
+'Proceed to Payment' }}
+      </button>
+    </div>
+
+  </div>
+
+</div>
+

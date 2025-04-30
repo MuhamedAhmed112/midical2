@@ -1,0 +1,57 @@
+<div class="container mt-5 article-detail-container">
+  <div *ngIf="article$ | async as article; else loadingOrError">
+
+    <!-- Action Buttons (Back, Edit, Delete) -->
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+      <a routerLink="/article" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back to Articles</a> 
+      <!-- Edit/Delete buttons shown only if authorized -->
+      <div *ngIf="canEditDelete$ | async">
+        <a [routerLink]="['/article/edit', articleId]" class="btn btn-outline-primary me-2"><i class="bi bi-pencil-square"></i> Edit</a>
+        <button type="button" class="btn btn-outline-danger" (click)="deleteArticle()"><i class="bi bi-trash"></i> Delete</button>
+      </div>
+    </div>
+
+    <!-- Article Header -->
+    <header class="mb-4">
+      <h1 class="display-5">{{ article.title }}</h1>
+      <div class="text-muted mb-2">
+        <span *ngIf="article.authorName">By {{ article.authorName }} | </span>
+        <span *ngIf="article.createdAt">Published on: {{ article.createdAt | date:'longDate' }}</span>
+        <span *ngIf="article.updatedAt && article.updatedAt !== article.createdAt"> | Updated on: {{ article.updatedAt | date:'longDate' }}</span>
+      </div>
+      <!-- Display category and tags if available -->
+      <div class="mb-3">
+        <span *ngIf="article.category !== undefined" class="badge bg-info me-2">
+          {{ getCategoryName(article.category) }}
+        </span>
+        <span *ngIf="article.tags && article.tags.length > 0">
+          <span *ngFor="let tag of article.tags" class="badge bg-secondary me-1">{{ tag }}</span>
+        </span>
+      </div>
+    </header>
+
+    <!-- Article Image -->
+    <div *ngIf="article.imageUrl" class="text-center mb-4 article-image-container">
+      <img [src]="article.imageUrl" class="img-fluid rounded shadow-sm" alt="{{ article.title }}">
+    </div>
+
+    <!-- Article Content -->
+    <section class="article-content" [innerHTML]="article.content"></section>
+
+  </div>
+
+  <!-- Loading/Error State -->
+  <ng-template #loadingOrError>
+    <div *ngIf="!(article$ | async); else errorState">
+      <p class="text-center">Loading article details...</p>
+      <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </div>
+    <ng-template #errorState>
+       <p class="text-center text-danger">Failed to load article details. Please try again later.</p>
+    </ng-template>
+  </ng-template>
+</div>

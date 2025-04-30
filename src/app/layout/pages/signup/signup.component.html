@@ -1,0 +1,174 @@
+<section id="login" class="LoginSection">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 custom-card pt-3 px-4 pb-2" data-aos="zoom-in">
+                <h5 class="text-center text-black fw-bold">Sign Up</h5>
+                <p class="text-center text-muted">Creat Your Account</p>
+  <form [formGroup]="signupForm"  (ngSubmit)="submitsignup()" >
+    @if (errormsg) {
+        <div class="alert alert-danger m-0 p-0 ">
+            <p class="p-0m-0">{{errormsg}}</p>
+        </div>
+    }
+ 
+ <div class="d-flex gap-2">
+    <div class="form-floating mb-2 text-black w-50">
+        <input formControlName="firstName" type=" text" class="form-control" id="UserName" placeholder="Muhamed">
+        <label for="userName"><i class="fa-solid fa-user"></i> FirstName</label>
+     @if (signupForm.get('firstName')?.errors&&signupForm.get('firstName')?.touched) {
+                    <div  class="alert alert-danger p-0 m-0">
+                         @if (signupForm.get('firstName')?.errors?.['required']) {
+                             <p class="p-1 m-0"> FirstName Is Requierd</p>
+
+                            }
+                            @else if (signupForm.get('firstName')?.errors?.['minlength']) {
+                                <p class="p-1 m-0">  Min Length is : 3</p>
+
+                                }   
+            @else if (signupForm.get('firstName')?.errors?.['maxlength']) {
+                <p class="p-1 m-0">  Max Length is : 8</p>
+
+            }
+
+                    </div>
+                }
+      
+    </div>
+    <div class="form-floating mb-2 text-black w-50">
+        <input formControlName="lastName" type=" text" class="form-control" id="UserName" placeholder="Ahmed">
+        <label for="userName"><i class="fa-solid fa-user"></i> LastName</label>
+        @if (signupForm.get('lastName')?.errors&&signupForm.get('lastName')?.touched) {
+            <div  class="alert alert-danger p-0 m-0">
+                 @if (signupForm.get('lastName')?.errors?.['required']) {
+                     <p class="p-1 m-0"> LastName Is Requierd</p>
+
+                    }
+                    @else if (signupForm.get('lastName')?.errors?.['minlength']) {
+                        <p class="p-1 m-0">  Min Length is : 3</p>
+
+                        }   
+    @else if (signupForm.get('lastName')?.errors?.['maxlength']) {
+        <p class="p-1 m-0">  Max Length is : 8</p>
+
+    }
+
+            </div>
+        }
+
+    </div>
+   </div>
+ 
+    <div class="form-floating mb-2 text-black">
+        <input formControlName="email" type="email" class="form-control" id="email" placeholder="EX: Muhamed@gmail.com">
+        <label for="email"><i class="fa-solid fa-envelope "></i> Email</label>
+        @if (signupForm.get('email')?.errors&&signupForm.get('email')?.touched) {
+            <div  class="alert alert-danger p-0 m-0">
+                 @if (signupForm.get('email')?.errors?.['required']) {
+                     <p class="p-1 m-0"> Email Is Requierd</p>
+
+                    }
+                    @else if (signupForm.get('email')?.errors?.['email']) {
+                        <p class="p-1 m-0"> Enter Valid Email </p>
+
+                        }   
+    
+ 
+            </div>
+        }
+    </div>
+
+    <div class="form-floating  mb-2 text-black">
+        <input formControlName="phoneNumber" type="tel" class="form-control " id="Phone" placeholder="Phone">
+        <label for="Phone"><i class="fa-solid fa-square-phone"></i> Phone</label>
+        @if (signupForm.get('phoneNumber')?.errors&&signupForm.get('phoneNumber')?.touched) {
+            <div  class="alert alert-danger p-0 m-0">
+                 @if (signupForm.get('phoneNumber')?.errors?.['required']) {
+                     <p class="p-1 m-0"> Phone  Is Requierd</p>
+
+                    }
+                    @else if (signupForm.get('phoneNumber')?.errors?.['pattern']) {
+                        <p class="p-1 m-0"> Enter Valid Phone   </p>
+
+                        }   
+    
+ 
+            </div>
+        }
+    </div>
+
+    <div class="form-floating  mb-2 text-black">
+        <input formControlName="dob" type="date" class="form-control text-muted " id="Phone" placeholder="Phone">
+        <label for="Phone"><i class="fa-solid fa-calendar"></i> Date Of Birth</label>
+        @if (signupForm.get('dob')?.errors&&signupForm.get('dob')?.touched) {
+            <div  class="alert alert-danger p-0 m-0">
+                 @if (signupForm.get('dob')?.errors?.['required']) {
+                     <p class="p-1 m-0"> Date Of Birth  Is Requierd</p>
+
+                    }
+                   
+    
+ 
+            </div>
+        }
+    </div>
+  
+
+    <div class="form-floating mb-2 text-black">
+        <input formControlName="password" type="password" class="form-control" id="password" placeholder="Password">
+        <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
+
+        @if (signupForm.get('password')?.errors&&signupForm.get('password')?.touched) {
+            <div  class="alert alert-danger p-0 m-0">
+                 @if (signupForm.get('password')?.errors?.['required']) {
+                     <p class="p-1 m-0"> Password  Is Requierd</p>
+
+                    }
+                    @else if (signupForm.get('password')?.errors?.['pattern']) {
+                        <p class="p-1 m-0"> *Password must have 8 or more characters, with at least one big letter, one small letter, one number, and one symbol ( $, !, %, , ?, &).</p>
+
+                        }   
+    
+ 
+            </div>
+        }
+    </div>
+    <div class="form-floating mb-2 text-black">
+        <input formControlName="confirmPassword" type="password" class="form-control" id="password" placeholder="Password">
+        <label for="password"><i class="fa-solid fa-lock"></i> Confirm Password</label>
+
+        @if (signupForm.get('confirmPassword')?.errors&&signupForm.get('confirmPassword')?.touched) {
+            <div  class="alert alert-danger p-0 m-0">
+                 @if (signupForm.get('confirmPassword')?.errors?.['required']) {
+                     <p class="p-1 m-0"> confirmPassword  Is Requierd</p>
+
+                    }
+                    @else if (signupForm.get('confirmPassword')?.errors?.['mismatch']) {
+                        <p class="p-1 m-0"> Password Is Not Match Confirm Password</p>
+
+                    }
+                   
+    
+ 
+            </div>
+        }
+    </div>
+
+    <button [disabled]="signupForm.invalid"  class="btn btn-custom "  >
+        @if (spinner) {
+            <span><i class="fa fa-spin fa-spinner"></i></span>
+        }
+        @else {
+            <span>Sign Up</span>
+        }
+    </button>
+
+  </form>
+               
+  
+                <div class="text-center mt-3">
+                     <p class="text-muted mt-2">Already Have An Account ? <a   class=" color-3 fw-bold text-decoration-none" routerLink ='/login'>Login  </a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+  </section>

@@ -1,0 +1,33 @@
+/* Add component styles here */
+.card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-title {
+  font-weight: bold;
+}
+
+.mt-auto {
+  margin-top: auto !important; /* Ensure button stays at the bottom */
+}
+
+.doctor-image {
+  width: 100%; /* Make image responsive */
+  height: 200px; /* Fixed height for consistency */
+  object-fit: cover; /* Cover the area without distortion */
+}
+
+.rating .star {
+  color: #ffc107; /* Yellow color for stars */
+  font-size: 1.1rem;
+}
+
+.doctor-card p {
+  font-size: 0.9rem; /* Slightly smaller font for details */
+}
+

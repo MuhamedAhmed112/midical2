@@ -1,0 +1,8 @@
+
+.buttoncolor{
+    color: white;
+    background-color: var(--works-text-color ) !important;
+ }
+ .buttoncolor:hover{
+     background-color: var(--card-title-color) !important;
+ }
