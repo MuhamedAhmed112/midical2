@@ -2,16 +2,21 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './layout/additions/navbar/navbar.component';
 import { FooterComponent } from './layout/additions/footer/footer.component';
-  
+import { EditorModule, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
+
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet,NavbarComponent, FooterComponent,],
+  imports: [RouterOutlet,NavbarComponent, FooterComponent,EditorModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
+  providers: [
+    // If you're self hosting and lazy loading TinyMCE from node_modules:
+    { provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' }
+  ],
 })
- 
+
 export class AppComponent {
 
   
@@ -29,4 +34,7 @@ export class AppComponent {
 
     }
   }
+
+  
+
 }
