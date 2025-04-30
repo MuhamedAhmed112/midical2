@@ -84,12 +84,17 @@ export class EditArticleComponent implements OnInit, OnDestroy {
   ];
 
   tinymceConfig = {
-    apiKey: 'ie3vm60z5ph0zx26fpdtetesh93yyaklk5xblq8dj3kkwd8t', // مفتاحك من TinyMCE
-    plugins: 'lists link image table code help wordcount',
-    toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code',
-    menubar: false
-
-
+    base_url: '/assets/tinymce', // Corrected base_url
+    plugins: 'lists link autolink quickbars searchreplace image table visualblocks pagebreak code help wordcount directionality code emoticons typography casechange anchor autoresize image table wordcount  media lists advlist preview insertdatetime importcss autosave tinycomments',
+    toolbar: 'undo redo | formatselect | searchreplace | bold italic | pagebreak | visualblocks | emoticons | ltr rtl | alignleft aligncenter alignright | code | typography | casechange | preview | bullist | link | anchor | media | restoredraft | insertdatetime | addcomment showcomments | image | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | wordcount ',
+    menubar: false,
+    min_height: 100,
+    tinycomments_author: 'author',
+  tinycomments_author_name: 'Name of the commenter',
+  tinycomments_mode: 'embedded',
+    content_css: '/my-styles.css',
+    importcss_append: true,
+    api_key: 'ie3vm60z5ph0zx26fpdtetesh93yyaklk5xblq8dj3kkwd8t'
   };
   
   editorContent = ''; // هنا هيتخزن المحتوى
