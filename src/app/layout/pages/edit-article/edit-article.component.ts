@@ -85,9 +85,15 @@ export class EditArticleComponent implements OnInit, OnDestroy {
 
   tinymceConfig = {
     base_url: '/assets/tinymce', // Corrected base_url
-    plugins: 'lists link image table code help wordcount',
-    toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | code',
+    plugins: 'lists link autolink quickbars searchreplace image table visualblocks pagebreak code help wordcount directionality code emoticons typography casechange anchor autoresize image table wordcount  media lists advlist preview insertdatetime importcss autosave tinycomments',
+    toolbar: 'undo redo | formatselect | searchreplace | bold italic | pagebreak | visualblocks | emoticons | ltr rtl | alignleft aligncenter alignright | code | typography | casechange | preview | bullist | link | anchor | media | restoredraft | insertdatetime | addcomment showcomments | image | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | wordcount ',
     menubar: false,
+    min_height: 100,
+    tinycomments_author: 'author',
+  tinycomments_author_name: 'Name of the commenter',
+  tinycomments_mode: 'embedded',
+    content_css: '/assets/css/editor-style.css',
+    importcss_append: true,
     api_key: 'ie3vm60z5ph0zx26fpdtetesh93yyaklk5xblq8dj3kkwd8t'
   };
 
@@ -190,15 +196,15 @@ export class EditArticleComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     this.errorMessage = null;
-
+  
     if (this.articleForm.invalid || !this.articleId) {
       console.log('Form is invalid or Article ID missing');
       this.articleForm.markAllAsTouched();
       return;
     }
-
+  
     this.isSubmitting = true;
-
+  
     // Prepare Query Parameters
     const queryParams: UpdateArticleQueryParams = {
       id: this.articleId,
@@ -207,21 +213,27 @@ export class EditArticleComponent implements OnInit, OnDestroy {
       Category: this.articleForm.get('category')?.value,
       Tags: this.articleForm.get('tags')?.value || '' // Ensure Tags is not null
     };
-
+  
     // Prepare FormData (only Content and optional Image)
     const formData = new FormData();
     formData.append('Content', this.articleForm.get('content')?.value);
-
+  
+    // If a new image is selected, append it to the FormData
     if (this.selectedFile) {
-      // Use 'articleImage' as key based on API definition [FromForm] UploadImageRequest? articleImage
       formData.append('Image', this.selectedFile, this.selectedFile.name);
+    } else {
+      // If no new image is selected, append null for the Image field
+      formData.append('Image', null as any); // Send null explicitly for the image
     }
-    // Note: If no new file is selected, formData will only contain 'Content'.
-    // The backend should handle the case where 'articleImage' is missing and not update the image.
-
+  
+    // Now, send the FormData along with queryParams
+    this.submitFormData(formData, queryParams);
+  }
+  
+  submitFormData(formData: FormData, queryParams: UpdateArticleQueryParams) {
     console.log('Query Params:', queryParams);
     console.log('FormData prepared. Sending to service...');
-
+  
     // Call updated service method
     this.articleService.updateArticle(queryParams, formData).subscribe({
       next: (response) => {
@@ -239,5 +251,11 @@ export class EditArticleComponent implements OnInit, OnDestroy {
       }
     });
   }
+  
+  
+
+  
+  
+  
 }
 

@@ -15,7 +15,7 @@ export interface Article {
   category?: number;
   authorName?: string;
   authorId?: string;
-  summary?: string;
+  summary: string;
 }
 
 // Interface for pagination/filter parameters

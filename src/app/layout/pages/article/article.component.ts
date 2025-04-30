@@ -162,5 +162,12 @@ export class ArticleComponent implements OnInit, OnDestroy {
   previousPage(): void {
     this.loadPage(this.currentPage - 1);
   }
+
+  getContentPreview(content: string): string {
+    // إذا كان المحتوى يحتوي على HTML نريد أن نقطع النص في المكان الصحيح
+    const textPreview = content.slice(0, 300);  // اقتصار النص على أول 100 حرف
+    return textPreview + '...'; // إضافة '...' للإشارة لوجود محتوى أكثر
+  }
+
 }
 
