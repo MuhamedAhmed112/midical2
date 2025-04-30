@@ -62,7 +62,7 @@
         Cover image is required.
       </div>
       <!-- Optional: Image preview -->
-      <img *ngIf="selectedFile" [src]="createObjectURL(selectedFile)" alt="Image Preview" class="img-thumbnail mt-2" style="max-height: 200px;">
+      <img *ngIf="imagePreviewUrl" [src]="imagePreviewUrl" alt="Image Preview" class="img-thumbnail mt-2" style="max-height: 200px;">
     </div>
 
     <button type="submit" class="btn btn-primary" [disabled]="articleForm.invalid">Submit Article</button>

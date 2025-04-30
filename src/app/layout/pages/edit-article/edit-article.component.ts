@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { EditorModule } from '@tinymce/tinymce-angular';
 import { Subscription } from 'rxjs';
-import { Article, ArticleService } from '../../../shared/services/article/article.service';
+import { Article, ArticleService, UpdateArticleQueryParams } from '../../../shared/services/article/article.service'; // Import updated service and interface
 import { Authiserviceservice } from '../../../shared/services/authntication/Authiservice.service';
 import { PLATFORM_ID } from '@angular/core';
 
@@ -82,15 +82,15 @@ export class EditArticleComponent implements OnInit, OnDestroy {
     { id: 30, name: 'Pathology' },
     { id: 31, name: 'Genetic Medicine' }
   ];
+
   tinymceConfig = {
-    base_url: '/assets/tinymce',
+    base_url: '/assets/tinymce', // Corrected base_url
     plugins: 'lists link image table code help wordcount',
     toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | code',
     menubar: false,
     api_key: 'ie3vm60z5ph0zx26fpdtetesh93yyaklk5xblq8dj3kkwd8t'
   };
 
-  
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -105,9 +105,9 @@ export class EditArticleComponent implements OnInit, OnDestroy {
       title: ['', Validators.required],
       summary: ['', Validators.required],
       category: [null, Validators.required],
-      tags: ['', Validators.required],
+      tags: ['', Validators.required], // Made tags required as per API? Check API docs if optional
       content: ['', Validators.required],
-      image: [null]
+      image: [null] // Image is optional on update
     });
 
     this.routeSubscription = this.route.paramMap.subscribe(params => {
@@ -144,10 +144,11 @@ export class EditArticleComponent implements OnInit, OnDestroy {
         const userIdClaim = this.currentUser?.nameid || this.currentUser?.sub;
         const isAdmin = this.currentUser?.roles?.includes('Admin');
 
+        // Authorization check - ensure user is admin or author
         if (!isAdmin && article.authorId !== userIdClaim) {
           this.errorMessage = 'You are not authorized to edit this article.';
           this.isLoading = false;
-          this.articleForm.disable();
+          this.articleForm.disable(); // Disable form if not authorized
           return;
         }
 
@@ -155,7 +156,7 @@ export class EditArticleComponent implements OnInit, OnDestroy {
           title: article.title,
           summary: article.summary || '',
           category: article.category,
-          tags: Array.isArray(article.tags) ? article.tags.join(', ') : '',
+          tags: Array.isArray(article.tags) ? article.tags.join(', ') : (article.tags || ''), // Handle tags correctly
           content: article.content
         });
 
@@ -175,10 +176,11 @@ export class EditArticleComponent implements OnInit, OnDestroy {
     if (file) {
       this.selectedFile = file;
       this.articleForm.patchValue({ image: file });
-      this.existingImageUrl = null;
+      this.existingImageUrl = null; // Clear existing image URL if new file is selected
     } else {
-      this.selectedFile = null;
-      this.articleForm.patchValue({ image: null });
+      // Keep existing image if no new file is selected, or handle clearing if needed
+      // this.selectedFile = null;
+      // this.articleForm.patchValue({ image: null });
     }
   }
 
@@ -188,44 +190,54 @@ export class EditArticleComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     this.errorMessage = null;
-  
+
     if (this.articleForm.invalid || !this.articleId) {
       console.log('Form is invalid or Article ID missing');
       this.articleForm.markAllAsTouched();
       return;
     }
-  
+
     this.isSubmitting = true;
-  
-    // إرسال البيانات التي تكون [FromBody]
-    const body = {
+
+    // Prepare Query Parameters
+    const queryParams: UpdateArticleQueryParams = {
+      id: this.articleId,
       Title: this.articleForm.get('title')?.value,
       Summary: this.articleForm.get('summary')?.value,
       Category: this.articleForm.get('category')?.value,
-      Tags: this.articleForm.get('tags')?.value,
+      Tags: this.articleForm.get('tags')?.value || '' // Ensure Tags is not null
     };
-  
-    // إرسال FormData للمحتوى والصورة
+
+    // Prepare FormData (only Content and optional Image)
     const formData = new FormData();
     formData.append('Content', this.articleForm.get('content')?.value);
-  
+
     if (this.selectedFile) {
+      // Use 'articleImage' as key based on API definition [FromForm] UploadImageRequest? articleImage
       formData.append('Image', this.selectedFile, this.selectedFile.name);
     }
-  
-    // إرسال البيانات عبر الـ API (النصوص عبر body و الـ FormData للمحتوى والصورة)
-    this.articleService.updateArticle(this.articleId, body, formData).subscribe({
+    // Note: If no new file is selected, formData will only contain 'Content'.
+    // The backend should handle the case where 'articleImage' is missing and not update the image.
+
+    console.log('Query Params:', queryParams);
+    console.log('FormData prepared. Sending to service...');
+
+    // Call updated service method
+    this.articleService.updateArticle(queryParams, formData).subscribe({
       next: (response) => {
         console.log('Article updated successfully', response);
         this.isSubmitting = false;
-        this.router.navigate(['/article', this.articleId]);
+        this.router.navigate(['/article', this.articleId]); // Navigate back to the article detail page
       },
       error: (error) => {
         console.error('Error updating article', error);
-        this.errorMessage = 'Failed to update article. Please try again.';
+        this.errorMessage = `Failed to update article: ${error.message || 'Please try again.'}`;
+        if (error.error && typeof error.error === 'object') {
+          this.errorMessage += ` Details: ${JSON.stringify(error.error)}`;
+        }
         this.isSubmitting = false;
       }
     });
   }
-  
 }
+
