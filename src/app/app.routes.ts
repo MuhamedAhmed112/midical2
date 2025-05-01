@@ -21,6 +21,8 @@ import { DoctorAppointmentsComponent } from './layout/pages/doctor-appointments/
 import { AddArticleComponent } from './layout/pages/add-article/add-article.component'; // Import AddArticleComponent
 import { EditArticleComponent } from './layout/pages/edit-article/edit-article.component'; // Import EditArticleComponent
 import { RoleAuthGuard } from './shared/guards/role-auth.guard'; 
+import { DrugReminderComponent } from './layout/pages/drug-reminder/drug-reminder.component'; // Import the new component
+
 export const routes: Routes = [
   {path: '', component:HomeComponent },
   {path: 'home' , component: HomeComponent   },
@@ -30,6 +32,7 @@ export const routes: Routes = [
   {path: 'doctors' , component: DoctorSearchComponent }, // Added route for doctor search
   {path: 'doctor-appointments/:id' , component: DoctorAppointmentsComponent }, // Added route for specific doctor appointments
   {path: 'Medicines' , component: MedicinsComponent   },
+  {path: 'drug-reminder', component: DrugReminderComponent, canActivate: [RoleAuthGuard] }, // Added route for drug reminder, protected by guard
   {path: 'Research' , component: ReSearchComponent },
   {path: 'Careers' , component: CareersComponent  },
   {path: 'Commitment' , component: CommitmentComponent  },
@@ -46,3 +49,4 @@ export const routes: Routes = [
    
 
 ];
+
