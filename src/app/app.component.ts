@@ -5,7 +5,7 @@ import { FooterComponent } from './layout/additions/footer/footer.component';
 import { EditorModule, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
 
 
-@Component({                                  
+@Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet,NavbarComponent, FooterComponent,EditorModule],
@@ -19,13 +19,13 @@ import { EditorModule, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
 
 export class AppComponent {
 
-  
+
   title = 'MedicalgraduationProject';
 
-  darkMode:boolean=false 
+  darkMode:boolean=false
 
   toggleDarkmode(){
-    this.darkMode = !this.darkMode 
+    this.darkMode = !this.darkMode
 
     if(this.darkMode){
       document.body.classList.add('dark-mode')
@@ -35,6 +35,6 @@ export class AppComponent {
     }
   }
 
-  
+
 
 }

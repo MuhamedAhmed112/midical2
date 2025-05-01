@@ -23,7 +23,7 @@ if(this._Authiserviceservice.userData.subscribe(()=>{
 
   }
 }) ){
- 
+
  }
 }
 }

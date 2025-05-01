@@ -7,7 +7,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { jwtDecode } from "jwt-decode";
 import { Data, Router } from '@angular/router';
 
- 
+
 @Injectable({
   providedIn: 'root'
 })

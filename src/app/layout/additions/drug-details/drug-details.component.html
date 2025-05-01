@@ -1,0 +1,56 @@
+<div class="container py-5">
+  <div class="row align-items-start">
+    <div class="col-md-4">
+      <img src="../../../../assets/images/R1.jpeg" alt="Panadol 500mg" class="img-fluid rounded">
+    </div>
+    <div class="col-md-8">
+      <div>
+        <h3>Panadol 500 mg</h3>
+      <h5 class="text-secondary">Film-Coated Tablets</h5>
+      <div class="d-flex align-items-center my-3">
+        <span class="rounded-3 border-1 border-black ico text-secondary"><i class="fa-solid fa-capsules"></i></span>
+        <strong class="ms-2">500 mg Paracetamol</strong>
+      </div>
+
+      <p>
+        Get effective pain relief with Panadol 500 mg Film-Coated Tablets, which provide faster paracetamol absorption compared to standard paracetamol tablets.
+      </p>
+
+      @if (showMore) {
+        <p>
+          We all know that everyday aches and pains can sometimes get in the way of life. When they do, reach for an effective pain relief tablet with a fast absorption that can get to work quickly and leaves the body naturally in 24 hours – like Panadol 500 mg Film-Coated Tablets.
+        </p>
+      }
+
+      <a class="btn btn-link p-0" (click)="toggleMore()">
+        {{ showMore ? 'Read less' : 'Read more' }}
+      </a>
+      </div>
+      <div class="mt-5">
+        <h5 class="fw-semibold">Dosage information</h5>
+        <div class="table-responsive  mt-3">
+          <table class="table text-center border rounded-3 overflow-hidden w-50 mt-2">
+            <thead class="table-primary">
+              <tr>
+                <th>Age</th>
+                <th>Dosage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>10–15</td>
+                <td>1 tablet</td>
+              </tr>
+              <tr>
+                <td>16 +</td>
+                <td>1–2 tablets</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-muted mt-2">Not suitable for children under 10 years.</p>
+    </div>
+
+
+  </div>
+</div>

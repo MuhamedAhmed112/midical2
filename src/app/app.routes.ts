@@ -20,8 +20,9 @@ import { DoctorSearchComponent } from './layout/pages/doctor-search/doctor-searc
 import { DoctorAppointmentsComponent } from './layout/pages/doctor-appointments/doctor-appointments.component';
 import { AddArticleComponent } from './layout/pages/add-article/add-article.component'; // Import AddArticleComponent
 import { EditArticleComponent } from './layout/pages/edit-article/edit-article.component'; // Import EditArticleComponent
-import { RoleAuthGuard } from './shared/guards/role-auth.guard'; 
+import { RoleAuthGuard } from './shared/guards/role-auth.guard';
 import { DrugReminderComponent } from './layout/pages/drug-reminder/drug-reminder.component'; // Import the new component
+import { DrugDetailsComponent } from './layout/additions/drug-details/drug-details.component';
 
 export const routes: Routes = [
   {path: '', component:HomeComponent },
@@ -35,6 +36,7 @@ export const routes: Routes = [
   {path: 'drug-reminder', component: DrugReminderComponent, canActivate: [RoleAuthGuard] }, // Added route for drug reminder, protected by guard
   {path: 'Research' , component: ReSearchComponent },
   {path: 'Careers' , component: CareersComponent  },
+  {path: 'drugDetails' , component: DrugDetailsComponent},
   {path: 'Commitment' , component: CommitmentComponent  },
   {path: 'Contact_Us' , component: ContactUsComponent },
   {path: 'article' , component: ArticleComponent }, // Route for the list page (Changed from Articles)
@@ -46,7 +48,7 @@ export const routes: Routes = [
   {path: 'signupinfo' , component:SignupinfoComponent},
   {path: 'doctorlogin' , component:DoctorloginComponent},
   {path: 'doctorsignup' , component:DoctorsignupComponent},
-   
+
 
 ];
 

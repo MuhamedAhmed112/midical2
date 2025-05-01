@@ -25,14 +25,14 @@
                 }
             </div>
         }
-     
+
     </div>
 
     <div class="form-floating mb-3 text-black">
         <input formControlName="password" type="password" class="form-control" id="password" placeholder="Password">
         <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
 @if (loginform.get('password')?.errors&&loginform.get('password')?.touched) {
-    
+
     <div class="alert alert-danger m-0 p-0 ">
         @if (loginform.get('password')?.errors?.['required']) {
             <p class="alert alert-danger m-0 p-0">Password Is Requierd</p>
@@ -57,8 +57,8 @@
     </button>
 
   </form>
-               
-  
+
+
                 <div class="text-center mt-3">
                     <a   class="text-muted" routerLink="/ForgotPassword" >Forgot Your Password?</a>
                     <p class="text-muted mt-2">If You Do Not Have An Account! <a   routerLink="/signupinfo" class="color-3 fw-bold text-decoration-none">Sign Up</a></p>
@@ -67,4 +67,3 @@
         </div>
     </div>
   </section>
-  

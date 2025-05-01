@@ -3,7 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { Authiserviceservice } from '../../../shared/services/authntication/Authiservice.service';
 import { log } from 'console';
-  
+
 
 @Component({
   selector: 'app-login',
@@ -27,7 +27,7 @@ submitlogin(){
 if(this.loginform.valid){
     this._Authiserviceservice.login(this.loginform.value).subscribe({
     next:(res)=>{
-console.log (res);    
+console.log (res);
 localStorage.setItem('userToken',res.token);
 this._Authiserviceservice.decodeUserData();//to know if the token exist
  this.spinner=false;
@@ -39,7 +39,7 @@ this._Authiserviceservice.decodeUserData();//to know if the token exist
       this.errmsg= err.error.errors[0].description
     }
   })
-  
+
 }
 
 
@@ -63,7 +63,7 @@ this._Authiserviceservice.decodeUserData();//to know if the token exist
 
 
   ngOnInit(): void {
-     
+
   }
 
 }
