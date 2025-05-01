@@ -1,10 +1,25 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'; // Import OnDestroy
 import { ArticleService, Article, ArticleParams } from '../../../shared/services/article/article.service';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms'; // Import FormsModule
-import { Observable, BehaviorSubject, switchMap, tap, Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs'; // Import Subject, debounceTime, distinctUntilChanged, takeUntil
-import { Authiserviceservice } from '../../../shared/services/authntication/Authiservice.service'; // تأكد من أن المسار صحيح
+import { Observable, BehaviorSubject, switchMap, tap, Subject, debounceTime, distinctUntilChanged, takeUntil, Subscription } from 'rxjs'; // Import Subject, debounceTime, distinctUntilChanged, takeUntil, Subscription
+import { Authiserviceservice } from '../../../shared/services/authntication/Authiservice.service'; // Import AuthService only
+
+// Define the interface directly in the component file
+interface DecodedToken {
+  email: string;
+  given_name: string;
+  family_name: string;
+  jti: string;
+  roles: string[];
+  permissions: string[];
+  exp: number;
+  iss: string;
+  aud: string;
+  nameid?: string; 
+  sub?: string; 
+}
 
 @Component({
   selector: 'app-article',
@@ -19,12 +34,14 @@ import { Authiserviceservice } from '../../../shared/services/authntication/Auth
 })
 export class ArticleComponent implements OnInit, OnDestroy {
   articles$: Observable<Article[]> | undefined;
-  
+  currentUser: DecodedToken | null = null; // Use the locally defined interface
+  private userSubscription: Subscription | null = null;
+
   // --- State Management ---
   currentPage = 1;
-  pageSize = 6; 
+  pageSize = 6;
   hasMorePages = true;
-  
+
   // Filter state
   searchTerm: string = '';
   selectedCategory: number | null = null; // Use null for 'All Categories'
@@ -80,11 +97,23 @@ export class ArticleComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>(); // For unsubscribing
 
-  constructor(private articleService: ArticleService,private authService: Authiserviceservice, private router : Router) { }
+  constructor(
+    private articleService: ArticleService,
+    private authService: Authiserviceservice // Inject AuthService
+  ) { }
 
   ngOnInit(): void {
+    // Subscribe to user data
+    this.userSubscription = this.authService.userData.subscribe(user => {
+      this.currentUser = user as DecodedToken | null; // Cast user to the local interface type
+      // Optionally call decodeUserData if userData is null initially and token exists
+      if (!user && typeof window !== 'undefined' && localStorage.getItem('token')) { // Check for browser environment
+        this.authService.decodeUserData();
+      }
+    });
+
     // Initial fetch parameters
-    this.updateParams(); 
+    this.updateParams();
 
     // Debounce search input
     this.searchSubject.pipe(
@@ -98,7 +127,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
     // Subscribe to parameter changes to fetch articles
     this.articles$ = this.paramsSubject.pipe(
-      switchMap(params => 
+      switchMap(params =>
         this.articleService.getAllArticles(params).pipe(
           tap((articles: Article[]) => {
             articles.forEach((article: Article) => {
@@ -108,8 +137,8 @@ export class ArticleComponent implements OnInit, OnDestroy {
             });
             this.hasMorePages = articles.length === this.pageSize;
           })
-          
-          
+
+
           // TODO: Add error handling (catchError)
         )
       ),
@@ -120,6 +149,15 @@ export class ArticleComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.userSubscription?.unsubscribe(); // Unsubscribe from user data
+  }
+
+  // Check if the current user has admin or doctor role
+  canAddArticle(): boolean {
+    if (!this.currentUser || !this.currentUser.roles) {
+      return false;
+    }
+    return this.currentUser.roles.includes('admin') || this.currentUser.roles.includes('doctor');
   }
 
   // Method to update the BehaviorSubject with current parameters
@@ -169,21 +207,6 @@ export class ArticleComponent implements OnInit, OnDestroy {
     const textPreview = content.slice(0, 300);  // اقتصار النص على أول 100 حرف
     return textPreview + '...'; // إضافة '...' للإشارة لوجود محتوى أكثر
   }
-  isAdminOrDoctor(): boolean {
-    const userData = this.authService.userData.getValue(); // هنا نفترض أن `userData` هو BehaviorSubject
-    return userData && (userData.roles.includes('Admin') || userData.roles.includes('Doctor'));
-  }
 
-  addArticle(): void {
-    if (this.isAdminOrDoctor()) {
-      // هنا يتم تنفيذ منطق إضافة المقال إذا كان المستخدم "Admin" أو "Doctor"
-      console.log('Adding new article...');
-      // يمكن إضافة منطق الانتقال إلى صفحة إضافة مقال أو فتح نموذج لإضافة مقال
-      this.router.navigate(['/article/add']);  // مثال على الانتقال لصفحة إضافة مقال
-    } else {
-      // إذا كان المستخدم ليس "Admin" أو "Doctor"
-      alert('You do not have permission to add articles.');
-    }
-  }
 }
 

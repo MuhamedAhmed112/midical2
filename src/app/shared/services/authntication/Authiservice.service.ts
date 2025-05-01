@@ -6,18 +6,7 @@ import { Environment  } from '../../../base/Environment';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { jwtDecode } from "jwt-decode";
 import { Data, Router } from '@angular/router';
-export interface DecodedToken {
-  sub: string;
-  email: string;
-  given_name: string;
-  family_name: string;
-  jti: string;
-  roles: string[];
-  permissions: string[];
-  exp: number;
-  iss: string;
-  aud: string;
-}
+
  
 @Injectable({
   providedIn: 'root'
@@ -38,8 +27,6 @@ export class Authiserviceservice {
  return this._HttpClient.post(`${Environment .baseurl}/Auth/Login`,logindata)
   }
 
-
-  
 decodeUserData(){
   const token = JSON.stringify(localStorage.getItem('userToken'));
   const decoded = jwtDecode(token);
@@ -51,7 +38,5 @@ logout(){
   this.userData.next(null);
   this._Router.navigate(['/home'])
 }
-getUserSnapshot(): DecodedToken | null {
-  return this.userData.getValue();
-}
+
 }

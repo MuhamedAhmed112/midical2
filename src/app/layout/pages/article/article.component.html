@@ -1,5 +1,11 @@
 <div class="container mt-5">
-  <h2>Articles</h2>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Articles</h2>
+    <!-- Add Button -->
+    <button *ngIf="canAddArticle()" class="btn btn-success" routerLink="/article/add">
+      <i class="fas fa-plus me-1"></i> Add Article
+    </button>
+  </div>
 
   <!-- Filtering and Sorting Controls -->
   <div class="row mb-4 gy-2 gx-3 align-items-center">
