@@ -1,71 +1,200 @@
 @import url('https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@200&display=swap');
-:root{
-    --icon-footer-color: #35A1A3;
-   --header-tetx-color: #61B1B2;
-   --works-text-color : #4a7374;
-   --card-title-color : #5fb4a2;
- }
- .color-1{
-   color: var(--icon-footer-color);
- }
- .color-2{
-   color: var(--header-tetx-color);
- }
- .color-3{
-   color: var(--works-text-color);
- }
- .color-4{
-   color: var(--card-title-color);
- }
- body{
-   --tw-bg-opacity: 1;
-   background-color: rgb(2 5 20 / var(--tw-bg-opacity));
-   margin: 0;
-   padding: 0;
-   line-height: inherit;
- }
- 
- 
- 
- /* styles.css */
- :root {
-   --bg-color: #ffffff;
-   
- }
- 
- .dark-mode {
-   --tw-bg-opacity: 1;
-   --bg-color: rgb(2 5 20 / var(--tw-bg-opacity));
-    color: #fff;
-    
- }
- 
- body {
-   background-color: var(--bg-color);
-   
-   transition: background-color 1s;
- } 
- 
- .dark-icon {
-   position: fixed;
-   bottom: 20px; /* المسافة من أسفل الشاشة */
-   right: 20px; /* المسافة من يمين الشاشة */
-   background-color: #000;
-   color: #fff;
-   padding: 8px;
-   border-radius: 50%;
-   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-   cursor: pointer;
-   z-index: 1000; /* اجعلها فوق جميع العناصر */
-   transition: transform .5s, background-color .5s;
- }
- 
- .dark-icon:hover {
-   background-color: #555;
-   transform: scale(1.1); /* تكبير عند التمرير */
- }
- 
- .dark-icon i {
-   font-size: 25px; /* حجم الأيقونة */
- }
- 
+
+/* Global Variables (Light Mode Defaults) */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #2d3748; /* Dark grey text */
+  --secondary-text-color: #718096; /* Medium grey text */
+  --card-bg-color: #ffffff;
+  --card-title-color: #5fb4a2; /* Existing color */
+  --border-color: #e2e8f0; /* Light grey border */
+  --input-bg-color: #ffffff;
+  --input-border-color: #cbd5e0;
+  --primary-color: #35A1A3; /* Existing teal */
+  --primary-text-color: #ffffff;
+  --header-text-color: #61B1B2; /* Existing color */
+  --works-text-color: #4a7374; /* Existing color */
+  --icon-footer-color: #35A1A3; /* Existing color */
+}
+
+/* Dark Mode Overrides */
+.dark-mode {
+  --bg-color: #1a202c; /* Dark blue-grey background */
+  --text-color: #e2e8f0; /* Light grey text */
+  --secondary-text-color: #a0aec0; /* Medium grey text */
+  --card-bg-color: #2d3748; /* Slightly lighter card background */
+  --card-title-color: #63b3ed; /* Lighter blue for titles */
+  --border-color: #4a5568; /* Darker grey border */
+  --input-bg-color: #2d3748; /* Same as card background */
+  --input-border-color: #718096; /* Medium grey border */
+  --primary-color: #4fd1c5; /* Brighter teal for buttons/links */
+  --primary-text-color: #1a202c; /* Dark text on bright buttons */
+  --header-text-color: #63b3ed; /* Lighter blue */
+  --works-text-color: #a0aec0; /* Medium grey */
+  --icon-footer-color: #4fd1c5; /* Brighter teal */
+
+  color: var(--text-color); /* Set default text color for dark mode */
+}
+
+/* Apply base background and text color */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  line-height: inherit;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Keep existing color utility classes if needed, but they might need adjustment */
+.color-1 {
+  color: var(--icon-footer-color);
+}
+.color-2 {
+  color: var(--header-text-color);
+}
+.color-3 {
+  color: var(--works-text-color);
+}
+.color-4 {
+  color: var(--card-title-color);
+}
+
+/* Style generic elements for dark mode */
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4,
+.dark-mode h5,
+.dark-mode h6 {
+  color: var(--text-color);
+}
+
+.dark-mode a {
+  color: var(--primary-color);
+}
+
+.dark-mode .card {
+  background-color: var(--card-bg-color);
+  border-color: var(--border-color);
+}
+
+.dark-mode .form-control,
+.dark-mode .form-select {
+  background-color: var(--input-bg-color);
+  color: var(--text-color);
+  border-color: var(--input-border-color);
+}
+
+.dark-mode .form-control::placeholder {
+  color: var(--secondary-text-color);
+}
+
+.dark-mode .btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--primary-text-color);
+}
+
+.dark-mode .btn-primary:hover {
+  opacity: 0.9;
+}
+
+.dark-mode .badge {
+    background-color: var(--secondary-text-color);
+    color: var(--bg-color);
+}
+
+/* Dark mode toggle icon styling */
+.dark-icon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #4a5568; /* Use a dark mode color */
+  color: #e2e8f0;
+  padding: 8px;
+  border-radius: 50%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform 0.3s, background-color 0.3s;
+}
+
+.dark-icon:hover {
+  background-color: #718096;
+  transform: scale(1.1);
+}
+
+.dark-icon i {
+  font-size: 25px;
+}
+
+/* Light Mode Footer */
+footer {
+  background-color: var(--bg-color); /* خلفية بيضاء في الوضع الفاتح */
+  color: var(--text-color); /* نص داكن في الوضع الفاتح */
+  border-top: 1px solid var(--border-color); /* إضافة حدود خفيفة */
+  padding: 20px 0;
+}
+
+footer a {
+  color: var(--text-color); /* روابط باللون الأسود */
+}
+
+footer a:hover {
+  color: var(--primary-color); /* تغيير اللون عند المرور فوق الرابط */
+}
+
+/* Dark Mode Footer */
+.dark-mode footer {
+  background-color: var(--card-bg-color); /* خلفية داكنة في الوضع الداكن */
+  color: var(--text-color); /* نص فاتح في الوضع الداكن */
+  border-top: 1px solid var(--border-color); /* حدود داكنة */
+  padding: 20px 0;
+}
+
+.dark-mode footer a {
+  color: var(--text-color); /* روابط بلون النص */
+}
+
+.dark-mode footer a:hover {
+  color: var(--primary-color); /* تغيير اللون عند المرور فوق الرابط */
+}
+
+
+
+footer .h5 {
+  color: var(--card-title-color); /* لون العناوين في الفوتر */
+  font-weight: bold;
+}
+
+
+footer .list-unstyled a {
+  color: var(--text-color); /* رابط باللون الأساسي */
+}
+
+footer .list-unstyled a:hover {
+  color: var(--primary-color); /* تغيير اللون عند المرور */
+}
+
+/* Social Media Icons */
+footer .social-links i {
+  color: var(--primary-color); /* أيقونات التواصل الاجتماعي بلون الأساسي */
+}
+
+footer .social-links i:hover {
+  color: var(--header-text-color); /* تغيير اللون عند المرور */
+}
+
+/* Contact Info Icons */
+footer .contact-info i {
+  color: var(--primary-color); /* الأيقونات الخاصة بالتواصل */
+}
+
+footer .contact-info i:hover {
+  color: var(--header-text-color); /* تغيير اللون عند المرور */
+}
+.footer.dark-mode {
+  background-color: #333; /* الخلفية في الوضع الداكن */
+  color: white; /* اللون الأبيض للنص */
+}

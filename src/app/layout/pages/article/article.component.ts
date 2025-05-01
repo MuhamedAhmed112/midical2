@@ -1,12 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core'; // Import OnDestroy
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ArticleService, Article, ArticleParams } from '../../../shared/services/article/article.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms'; // Import FormsModule
-import { Observable, BehaviorSubject, switchMap, tap, Subject, debounceTime, distinctUntilChanged, takeUntil, Subscription } from 'rxjs'; // Import Subject, debounceTime, distinctUntilChanged, takeUntil, Subscription
-import { Authiserviceservice } from '../../../shared/services/authntication/Authiservice.service'; // Import AuthService only
+import { FormsModule } from '@angular/forms';
+import { Observable, BehaviorSubject, switchMap, tap, Subject, debounceTime, distinctUntilChanged, takeUntil, Subscription, catchError, of } from 'rxjs';
+import { Authiserviceservice } from '../../../shared/services/authntication/Authiservice.service';
 
-// Define the interface directly in the component file
 interface DecodedToken {
   email: string;
   given_name: string;
@@ -17,8 +16,8 @@ interface DecodedToken {
   exp: number;
   iss: string;
   aud: string;
-  nameid?: string; 
-  sub?: string; 
+  nameid?: string;
+  sub?: string;
 }
 
 @Component({
@@ -27,14 +26,14 @@ interface DecodedToken {
   imports: [
     CommonModule,
     RouterModule,
-    FormsModule // Add FormsModule here
+    FormsModule
   ],
   templateUrl: './article.component.html',
   styleUrls: ['./article.component.css']
 })
 export class ArticleComponent implements OnInit, OnDestroy {
   articles$: Observable<Article[]> | undefined;
-  currentUser: DecodedToken | null = null; // Use the locally defined interface
+  currentUser: DecodedToken | null = null;
   private userSubscription: Subscription | null = null;
 
   // --- State Management ---
@@ -44,12 +43,11 @@ export class ArticleComponent implements OnInit, OnDestroy {
 
   // Filter state
   searchTerm: string = '';
-  selectedCategory: number | null = null; // Use null for 'All Categories'
+  selectedCategory: number | null = null;
   selectedTag: string = '';
-  sortBy: string = ''; // e.g., 'title', 'PublishedDate'
+  sortBy: string = '';
   sortDescending: boolean = false;
 
-  // Available options
   categories = [
     { id: 0, name: 'Cardiology' },
     { id: 1, name: 'Dermatology' },
@@ -84,114 +82,99 @@ export class ArticleComponent implements OnInit, OnDestroy {
     { id: 30, name: 'Pathology' },
     { id: 31, name: 'Genetic Medicine' }
   ];
-   // 0-31 based on API doc
+
   sortOptions = [
     { value: '', label: 'Default' },
     { value: 'title', label: 'Title' },
     { value: 'PublishedDate', label: 'Date Created' },
-    // Add other sortable fields if known
   ];
 
-  // RxJS Subjects for handling filters and component destruction
   private paramsSubject = new BehaviorSubject<ArticleParams>({});
   private searchSubject = new Subject<string>();
-  private destroy$ = new Subject<void>(); // For unsubscribing
+  private destroy$ = new Subject<void>();
 
   constructor(
     private articleService: ArticleService,
-    private authService: Authiserviceservice // Inject AuthService
+    private authService: Authiserviceservice
   ) { }
 
   ngOnInit(): void {
-    // Subscribe to user data
     this.userSubscription = this.authService.userData.subscribe(user => {
-      this.currentUser = user as DecodedToken | null; // Cast user to the local interface type
-      // Optionally call decodeUserData if userData is null initially and token exists
-      if (!user && typeof window !== 'undefined' && localStorage.getItem('token')) { // Check for browser environment
+      this.currentUser = user as DecodedToken | null;
+      if (!user && localStorage.getItem('token')) {
         this.authService.decodeUserData();
       }
     });
 
-    // Initial fetch parameters
     this.updateParams();
 
-    // Debounce search input
     this.searchSubject.pipe(
-      debounceTime(500), // Wait for 500ms pause in events
-      distinctUntilChanged(), // Only emit if value has changed
-      takeUntil(this.destroy$) // Unsubscribe on component destroy
+      debounceTime(500),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
     ).subscribe(searchTerm => {
       this.searchTerm = searchTerm;
       this.applyFilters();
     });
 
-    // Subscribe to parameter changes to fetch articles
     this.articles$ = this.paramsSubject.pipe(
       switchMap(params =>
         this.articleService.getAllArticles(params).pipe(
           tap((articles: Article[]) => {
-            articles.forEach((article: Article) => {
+            articles.forEach(article => {
               if (typeof article.tags === 'string') {
                 article.tags = (article.tags as string).split(',').map((tag: string) => tag.trim());
               }
             });
             this.hasMorePages = articles.length === this.pageSize;
+          }),
+          catchError(error => {
+            console.error('Error fetching articles', error);
+            return of([]);
           })
-
-
-          // TODO: Add error handling (catchError)
         )
       ),
-      takeUntil(this.destroy$) // Unsubscribe on component destroy
+      takeUntil(this.destroy$)
     );
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.userSubscription?.unsubscribe(); // Unsubscribe from user data
+    this.userSubscription?.unsubscribe();
   }
 
-  // Check if the current user has admin or doctor role
   canAddArticle(): boolean {
-    if (!this.currentUser || !this.currentUser.roles) {
-      return false;
-    }
-    return this.currentUser.roles.includes('admin') || this.currentUser.roles.includes('doctor');
+    if (!this.currentUser || !this.currentUser.roles) return false;
+    return this.currentUser.roles.includes('Admin') || this.currentUser.roles.includes('Doctor');
   }
 
-  // Method to update the BehaviorSubject with current parameters
   updateParams(): void {
     const params: ArticleParams = {
       pageNumber: this.currentPage,
       pageSize: this.pageSize,
-      // Only include filters if they have a value
       ...(this.searchTerm && { searchTerm: this.searchTerm }),
       ...(this.selectedCategory !== null && { category: this.selectedCategory }),
       ...(this.selectedTag && { tag: this.selectedTag }),
       ...(this.sortBy && { sortBy: this.sortBy }),
-      // sortDescending is boolean, include if true or if explicitly set
       ...(this.sortBy && { sortDescending: this.sortDescending })
     };
     this.paramsSubject.next(params);
   }
 
-  // Called when search input changes
   onSearchChange(value: string): void {
     this.searchSubject.next(value);
   }
 
-  // Called when filters (Category, Tag, Sort) are changed and need immediate update
   applyFilters(): void {
-    this.currentPage = 1; // Reset to first page when filters change
+    this.currentPage = 1;
     this.updateParams();
   }
 
-  // --- Pagination Methods ---
   loadPage(page: number): void {
     if (page < 1) return;
     this.currentPage = page;
-    this.updateParams(); // Update params with new page number
+    this.updateParams();
   }
 
   nextPage(): void {
@@ -203,10 +186,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   }
 
   getContentPreview(content: string): string {
-    // إذا كان المحتوى يحتوي على HTML نريد أن نقطع النص في المكان الصحيح
-    const textPreview = content.slice(0, 300);  // اقتصار النص على أول 100 حرف
-    return textPreview + '...'; // إضافة '...' للإشارة لوجود محتوى أكثر
+    const textPreview = content.slice(0, 300);
+    return textPreview + '...';
   }
-
 }
-

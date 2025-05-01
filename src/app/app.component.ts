@@ -5,7 +5,7 @@ import { FooterComponent } from './layout/additions/footer/footer.component';
 import { EditorModule, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
 
 
-@Component({
+@Component({                                  
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet,NavbarComponent, FooterComponent,EditorModule],
