@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'; // Import OnDestroy
 import { ArticleService, Article, ArticleParams } from '../../../shared/services/article/article.service';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms'; // Import FormsModule
 import { Observable, BehaviorSubject, switchMap, tap, Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs'; // Import Subject, debounceTime, distinctUntilChanged, takeUntil
+import { Authiserviceservice } from '../../../shared/services/authntication/Authiservice.service'; // تأكد من أن المسار صحيح
 
 @Component({
   selector: 'app-article',
@@ -79,7 +80,7 @@ export class ArticleComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>(); // For unsubscribing
 
-  constructor(private articleService: ArticleService) { }
+  constructor(private articleService: ArticleService,private authService: Authiserviceservice, private router : Router) { }
 
   ngOnInit(): void {
     // Initial fetch parameters
@@ -168,6 +169,21 @@ export class ArticleComponent implements OnInit, OnDestroy {
     const textPreview = content.slice(0, 300);  // اقتصار النص على أول 100 حرف
     return textPreview + '...'; // إضافة '...' للإشارة لوجود محتوى أكثر
   }
+  isAdminOrDoctor(): boolean {
+    const userData = this.authService.userData.getValue(); // هنا نفترض أن `userData` هو BehaviorSubject
+    return userData && (userData.roles.includes('Admin') || userData.roles.includes('Doctor'));
+  }
 
+  addArticle(): void {
+    if (this.isAdminOrDoctor()) {
+      // هنا يتم تنفيذ منطق إضافة المقال إذا كان المستخدم "Admin" أو "Doctor"
+      console.log('Adding new article...');
+      // يمكن إضافة منطق الانتقال إلى صفحة إضافة مقال أو فتح نموذج لإضافة مقال
+      this.router.navigate(['/article/add']);  // مثال على الانتقال لصفحة إضافة مقال
+    } else {
+      // إذا كان المستخدم ليس "Admin" أو "Doctor"
+      alert('You do not have permission to add articles.');
+    }
+  }
 }
 

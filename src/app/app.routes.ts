@@ -20,7 +20,7 @@ import { DoctorSearchComponent } from './layout/pages/doctor-search/doctor-searc
 import { DoctorAppointmentsComponent } from './layout/pages/doctor-appointments/doctor-appointments.component';
 import { AddArticleComponent } from './layout/pages/add-article/add-article.component'; // Import AddArticleComponent
 import { EditArticleComponent } from './layout/pages/edit-article/edit-article.component'; // Import EditArticleComponent
-
+import { RoleAuthGuard } from './shared/guards/role-auth.guard'; 
 export const routes: Routes = [
   {path: '', component:HomeComponent },
   {path: 'home' , component: HomeComponent   },
@@ -35,7 +35,7 @@ export const routes: Routes = [
   {path: 'Commitment' , component: CommitmentComponent  },
   {path: 'Contact_Us' , component: ContactUsComponent },
   {path: 'article' , component: ArticleComponent }, // Route for the list page (Changed from Articles)
-  {path: 'article/add' , component: AddArticleComponent }, // Route for adding an article
+  {path: 'article/add' , component: AddArticleComponent ,canActivate: [RoleAuthGuard]}, // Route for adding an article
   {path: 'article/edit/:id' , component: EditArticleComponent }, // Route for editing an article
   {path: 'article/:id' , component: ArticleDetailComponent }, // Route for the detail page
   {path: 'ForgotPassword' , component: ForgotPasswordComponent  },
