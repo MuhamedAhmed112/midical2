@@ -1,68 +1,30 @@
 <nav class="navbar navbar-expand-lg px-5 position-sticky navcolor top-0 end-0 start-0">
-    <div class="container-fluid">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center navIcon" routerLink="/home"></a>
 
-      <a class="navbar-brand d-flex align-items-center navIcon  "  routerLink="/home">
-        </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+      <span class="navbar-toggler-icon border-0 fs-6"></span>
+    </button>
 
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul *ngIf="isLogin" class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item mx-3 NavLinkColor"><a routerLink="Medicines" routerLinkActive="bg-white activeLink" class="nav-link rounded-4">Medicines</a></li>
+        <li class="nav-item mx-3 NavLinkColor"><a routerLink="article" routerLinkActive="bg-white activeLink" class="nav-link rounded-4">Articles</a></li>
+        <li class="nav-item mx-2 NavLinkColor"><a routerLink="Research" routerLinkActive="bg-white activeLink" class="nav-link rounded-4">Research</a></li>
+        <li class="nav-item mx-2 NavLinkColor"><a routerLink="Commitment" routerLinkActive="bg-white activeLink" class="nav-link rounded-4">Commitment</a></li>
+        <li class="nav-item mx-2 NavLinkColor"><a routerLink="Careers" routerLinkActive="bg-white activeLink" class="nav-link rounded-4">Careers</a></li>
+        <li class="nav-item mx-2 NavLinkColor"><a routerLink="Contact_Us" routerLinkActive="bg-white activeLink" class="nav-link rounded-4">Contact Us</a></li>
+        <li class="nav-item mx-2 NavLinkColor"><a routerLink="drug-reminder" routerLinkActive="bg-white activeLink" class="nav-link rounded-4">Drug Reminder</a></li>
+      </ul>
 
-      <button
-        class="navbar-toggler border-0"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarContent"
-        aria-controls="navbarContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon border-0 fs-6"></span>
-      </button>
+      <div class="ms-auto" *ngIf="!isLogin">
+        <button class="btn btn-outline-light btn-sm me-2 px-3 pure-moving-border" routerLink="/login">Login</button>
+        <button class="btn btn-outline-light btn-sm pure-moving-border" routerLink="/signupinfo">Sign Up</button>
+      </div>
 
-      <div class="collapse navbar-collapse " id="navbarContent">
-        @if (isLogin == true) {
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item mx-3 NavLinkColor">
-              <a class="nav-link  rounded-4   " routerLink="Medicines"  routerLinkActive="bg-white activeLink">Medicines</a>
-            </li>
-            <li class="nav-item mx-3 NavLinkColor">
-              <a class="nav-link  rounded-4   " routerLink="article"  routerLinkActive="bg-white activeLink">Articles</a>
-            </li>
-            <li class="nav-item mx-2 NavLinkColor">
-              <a class="nav-link rounded-4 " routerLink="Research" routerLinkActive="bg-white activeLink">Research</a>
-            </li>
-            <li class="nav-item mx-2 NavLinkColor">
-              <a class="nav-link rounded-4 " routerLink="Commitment" routerLinkActive="bg-white activeLink">Commitment</a>
-            </li>
-            <li class="nav-item mx-2 NavLinkColor">
-              <a class="nav-link rounded-4 " routerLink="Careers" routerLinkActive="bg-white activeLink">Careers</a>
-            </li>
-            <li class="nav-item mx-2 NavLinkColor">
-              <a class="nav-link rounded-4 " routerLink="Contact_Us" routerLinkActive="bg-white activeLink">Contact_Us</a>
-            </li>
-            <li class="nav-item mx-2 NavLinkColor">
-              <a class="nav-link rounded-4 " routerLink="drug-reminder" routerLinkActive="bg-white activeLink">drug-reminder</a>
-            </li>
-          </ul>
-        }
-
-
-
-
-
-
-        @if (isLogin == false) {
-          <button type="button" class="btn btn-outline-light ms-auto btn-sm me-2 px-3 pure-moving-border " routerLink="/login">Login</button>
-          <button type="button" class="btn btn-outline-light  btn-sm   pure-moving-border   "routerLink="/signupinfo">SignUp</button>
-        }
- @else {
-  <button  (click)="_Authiserviceservice.logout()" type="button" class="btn btn-outline-light  btn-sm ms-auto  pure-moving-border   " >Logout</button>
-
- }
-
+      <div class="ms-auto" *ngIf="isLogin">
+        <button (click)="_Authiserviceservice.logout()" class="btn btn-outline-light btn-sm pure-moving-border">Logout</button>
       </div>
     </div>
-  </nav>
-
-
-
-
-
+  </div>
+</nav>

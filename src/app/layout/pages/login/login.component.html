@@ -1,69 +1,47 @@
-<section id="login" class="LoginSection">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-5 custom-card" data-aos="zoom-in">
-                <h3 class="text-center text-black fw-bold">WELCOME!</h3>
-                <p class="text-center text-muted">Please Enter Your Email & Password To Login</p>
-  <form [formGroup]="loginform"  (ngSubmit)="submitlogin()"  >
-    @if (errmsg) {
-        <div class="alert alert-danger m-0 p-0 ">
-            <p class="p-0m-0">{{errmsg}}</p>
-        </div>
-    }
-    <div   class="form-floating mb-3 text-black">
-        <input formControlName="email" type="email" class="form-control" id="email" placeholder="EX: Muhamed@gmail.com">
-        <label for="email"><i class="fa-solid fa-envelope "></i> Email</label>
-        @if (loginform.get('email')?.errors&& loginform.get('email')?.touched) {
-            <div class="alert alert-danger m-0 p-0">
-                @if (loginform.get('email')?.errors?.['required']) {
-                    <p class="alert alert-danger m-0 p-0">Email Is Requierd </p>
+<section class="LoginSection">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5 custom-card" data-aos="zoom-in">
+        <h3 class="text-center text-black fw-bold">WELCOME!</h3>
+        <p class="text-center text-muted">Please Enter Your Email & Password To Login</p>
 
-                }
-                @else if (loginform.get('email')?.errors?.['email']) {
-                    <p class="alert alert-danger m-0 p-0">Enter Valid Email </p>
+        <form [formGroup]="loginform" (ngSubmit)="submitlogin()">
+          <div *ngIf="errmsg" class="alert alert-danger p-1">{{ errmsg }}</div>
 
-                }
+          <div class="form-floating mb-3 text-black">
+            <input formControlName="email" type="email" class="form-control" id="email" placeholder="Email" />
+            <label for="email"><i class="fa-solid fa-envelope"></i> Email</label>
+            <div *ngIf="loginform.get('email')?.invalid && loginform.get('email')?.touched" class="alert alert-danger p-1">
+              <p *ngIf="loginform.get('email')?.errors?.['required']">Email is required</p>
+              <p *ngIf="loginform.get('email')?.errors?.['email']">Enter a valid email</p>
             </div>
-        }
+          </div>
 
-    </div>
-
-    <div class="form-floating mb-3 text-black">
-        <input formControlName="password" type="password" class="form-control" id="password" placeholder="Password">
-        <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
-@if (loginform.get('password')?.errors&&loginform.get('password')?.touched) {
-
-    <div class="alert alert-danger m-0 p-0 ">
-        @if (loginform.get('password')?.errors?.['required']) {
-            <p class="alert alert-danger m-0 p-0">Password Is Requierd</p>
-
-        }
-        @else if (loginform.get('password')?.errors?.['pattern']) {
-        <p class="alert alert-danger m-0 p-0"> *Password must have 8 or more characters, with at least one big letter, one small letter, one number, and one symbol ( $, !, %, , ?, &).</p>
-        }
-    </div>
-
-}
-
-    </div>
-
-    <button [disabled]="loginform.invalid"  class="btn btn-custom "  >
-        @if (spinner) {
-            <span><i class="fa fa-spin fa-spinner"></i></span>
-        }
-        @else {
-            <span> Login </span>
-        }
-    </button>
-
-  </form>
-
-
-                <div class="text-center mt-3">
-                    <a   class="text-muted" routerLink="/ForgotPassword" >Forgot Your Password?</a>
-                    <p class="text-muted mt-2">If You Do Not Have An Account! <a   routerLink="/signupinfo" class="color-3 fw-bold text-decoration-none">Sign Up</a></p>
-                </div>
+          <div class="form-floating mb-3 text-black">
+            <input formControlName="password" type="password" class="form-control" id="password" placeholder="Password" />
+            <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
+            <div *ngIf="loginform.get('password')?.invalid && loginform.get('password')?.touched" class="alert alert-danger p-1">
+              <p *ngIf="loginform.get('password')?.errors?.['required']">Password is required</p>
+              <p *ngIf="loginform.get('password')?.errors?.['pattern']">
+                Password must have 8+ characters with a capital letter, small letter, number, and symbol
+              </p>
             </div>
+          </div>
+
+          <button [disabled]="loginform.invalid" class="btn btn-custom w-100">
+            <span *ngIf="spinner"><i class="fa fa-spin fa-spinner"></i></span>
+            <span *ngIf="!spinner">Login</span>
+          </button>
+        </form>
+
+        <div class="text-center mt-3">
+          <a routerLink="/ForgotPassword" class="text-muted">Forgot Your Password?</a>
+          <p class="text-muted mt-2">
+            If You Do Not Have An Account!
+            <a routerLink="/signupinfo" class="color-3 fw-bold text-decoration-none">Sign Up</a>
+          </p>
         </div>
+      </div>
     </div>
-  </section>
+  </div>
+</section>

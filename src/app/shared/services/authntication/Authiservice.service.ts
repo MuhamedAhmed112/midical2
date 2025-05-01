@@ -1,42 +1,61 @@
- import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { signupdata } from '../../interfaces/data';
-import { logindata } from '../../interfaces/data';
-import { Environment  } from '../../../base/Environment';
+import { signupdata, logindata } from '../../interfaces/data';
+import { Environment } from '../../../base/Environment';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { jwtDecode } from "jwt-decode";
-import { Data, Router } from '@angular/router';
-
+import { jwtDecode } from 'jwt-decode';
+import { Router } from '@angular/router';
+import { tap } from 'rxjs/operators'; // <-- Add this import
 
 @Injectable({
   providedIn: 'root'
 })
 export class Authiserviceservice {
+  userData = new BehaviorSubject<any>(null);
+  token: string | null = null;
+  isLoggedIn = false;
 
-  constructor(private _HttpClient:HttpClient ,private _Router:Router) { }
-
-  userData:BehaviorSubject<any>=new BehaviorSubject(null); //to save the token inside it
-
-  signup(data:signupdata):Observable<any>
-  {
-    return this._HttpClient.post(`${Environment.baseurl}/Auth/Register`, data)
+  constructor(private _HttpClient: HttpClient, private _Router: Router) {
+    this.loadUserData();
   }
 
-  login(logindata:logindata):Observable<any>
-  {
- return this._HttpClient.post(`${Environment .baseurl}/Auth/Login`,logindata)
+  signup(data: signupdata): Observable<any> {
+    return this._HttpClient.post(`${Environment.baseurl}/Auth/Register`, data);
   }
 
-decodeUserData(){
-  const token = JSON.stringify(localStorage.getItem('userToken'));
-  const decoded = jwtDecode(token);
-  this.userData.next(decoded) ;
-  console.log(this.userData.getValue());
-}
-logout(){
-  localStorage.removeItem('userToken');
-  this.userData.next(null);
-  this._Router.navigate(['/home'])
-}
+  login(data: logindata): Observable<any> {
+    return this._HttpClient.post(`${Environment.baseurl}/Auth/Login`, data).pipe(
+      tap((response: any) => {
+        localStorage.setItem('userToken', response.token); // Store token
+        this.decodeUserData(); // Decode and set user data
+      })
+    );
+  }
 
+  decodeUserData() {
+    const token = localStorage.getItem('userToken');
+    if (token) {
+      const decoded = jwtDecode(token);
+      this.userData.next(decoded);
+      this.isLoggedIn = true;
+    }
+  }
+
+  logout() {
+    localStorage.removeItem('userToken');
+    this.userData.next(null);
+    this.isLoggedIn = false;
+    this._Router.navigate(['/home']);
+  }
+
+  loadUserData() {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('userToken');
+      if (token) {
+        this.token = token;
+        this.isLoggedIn = true;
+        this.decodeUserData(); // Decode and set user data on initial load
+      }
+    }
+  }
 }
