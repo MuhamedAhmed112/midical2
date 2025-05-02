@@ -1,72 +1,99 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-// import { RouterLink } from '@angular/router'; // Removed unused import
-import { FormsModule } from '@angular/forms'; // Import FormsModule for ngModel
-import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
-import { map, startWith, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { DrugService, Drug } from '../../../shared/services/drug/drug.service'; // Adjust path as needed
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, RouterLink } from '@angular/router'; // Import Router
+import { FormsModule } from '@angular/forms';
+import { Observable, BehaviorSubject, Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
+import { DrugService, Drug, PaginatedDrugs } from '../../../shared/services/drug/drug.service'; // Adjust path as needed
+import { Authiserviceservice } from '../../../shared/services/authntication/Authiservice.service'; // Import Auth Service
 
 @Component({
   selector: 'app-medicins',
   standalone: true,
-  imports: [CommonModule, FormsModule], // Removed RouterLink, kept FormsModule
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './medicins.component.html',
-  styleUrls: ['./medicins.component.css'] // Corrected styleUrl to styleUrls
+  styleUrls: ['./medicins.component.css']
 })
-export class MedicinsComponent implements OnInit {
-  private allDrugsSubject = new BehaviorSubject<Drug[]>([]);
-  allDrugs$ = this.allDrugsSubject.asObservable();
-
-  private searchTermSubject = new BehaviorSubject<string>('');
-  searchTerm$ = this.searchTermSubject.asObservable().pipe(
-    debounceTime(300), // Add debounce to avoid rapid filtering
-    distinctUntilChanged() // Only filter if term changes
-  );
-
-  filteredDrugs$: Observable<Drug[]>;
-
+export class MedicinsComponent implements OnInit, OnDestroy {
+  drugs: Drug[] = [];
   isLoading = true;
   error: string | null = null;
 
   currentPage = 1;
-  itemsPerPage = 12; // Adjust as needed
+  itemsPerPage = 12; // Default items per page
   totalItems = 0;
+  totalPages = 0;
 
-  constructor(private drugService: DrugService) {
-    // Combine drugs and search term to get filtered drugs
-    this.filteredDrugs$ = combineLatest([this.allDrugs$, this.searchTerm$]).pipe(
-      map(([drugs, term]) => {
-        const lowerCaseTerm = term.toLowerCase();
-        const filtered = drugs.filter(drug =>
-          drug.name.toLowerCase().includes(lowerCaseTerm) ||
-          (drug.description && drug.description.toLowerCase().includes(lowerCaseTerm))
-          // Add more fields to search if needed
-        );
-        this.totalItems = filtered.length;
-        this.currentPage = 1; // Reset to first page on filter
-        return filtered;
-      })
-    );
-  }
+  private searchTermSubject = new Subject<string>();
+  searchTerm: string = '';
+  private searchSubscription: Subscription | undefined;
+
+  isAdmin = false; // Property to track admin status
+
+  constructor(
+    private drugService: DrugService,
+    private authService: Authiserviceservice, // Inject Auth Service
+    private router: Router // Inject Router for navigation
+  ) {}
 
   ngOnInit(): void {
-    this.fetchDrugs();
+    this.checkAdminRole(); // Check user role on init
+    this.fetchDrugs(); // Initial fetch
+
+    // Subscribe to search term changes with debounce
+    this.searchSubscription = this.searchTermSubject.pipe(
+      debounceTime(400), // Wait for 400ms pause in events
+      distinctUntilChanged(), // Only emit if value has changed
+      tap(term => {
+        this.searchTerm = term;
+        this.currentPage = 1; // Reset to first page on new search
+        this.fetchDrugs(); // Fetch drugs with the new search term
+      })
+    ).subscribe();
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe to prevent memory leaks
+    this.searchSubscription?.unsubscribe();
+  }
+
+  checkAdminRole(): void {
+    // Subscribe to userData changes to get the role
+    this.authService.userData.subscribe(userData => {
+      const roleClaim = userData ? (userData.role || userData['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']) : null;
+      if (roleClaim) {
+        this.isAdmin = Array.isArray(roleClaim) ? roleClaim.includes('Admin') : roleClaim === 'Admin';
+      } else {
+        this.isAdmin = false;
+      }
+      console.log('Medicins User Data:', userData);
+      console.log('Medicins Is Admin:', this.isAdmin);
+    });
   }
 
   fetchDrugs(): void {
     this.isLoading = true;
     this.error = null;
-    this.drugService.getAllDrugs().subscribe({
-      next: (response) => {
-        // Check if the response has a 'data' property
-        const drugs = (response && typeof response === 'object' && 'data' in response) ? response.data : response;
-        if (Array.isArray(drugs)) {
-          this.allDrugsSubject.next(drugs);
+    this.drugService.getDrugs(this.currentPage, this.itemsPerPage, this.searchTerm).subscribe({
+      next: (response: PaginatedDrugs) => {
+        if (response && Array.isArray(response.items)) {
+            this.drugs = response.items;
+            // Assuming the API response structure includes totalCount
+            this.totalItems = response.totalCount || 0; 
+            this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+            if (this.currentPage > this.totalPages && this.totalPages > 0) {
+                this.currentPage = this.totalPages;
+                this.fetchDrugs();
+            } else if (this.drugs.length === 0 && this.currentPage > 1) {
+                this.currentPage = 1;
+                this.fetchDrugs();
+            }
         } else {
-          // Handle unexpected response format
-          console.error('Unexpected response format for drugs:', response);
-          this.error = 'Failed to process drug data.';
-          this.allDrugsSubject.next([]);
+            console.error('Unexpected response format for paginated drugs:', response);
+            this.error = 'Failed to process drug data.';
+            this.drugs = [];
+            this.totalItems = 0;
+            this.totalPages = 0;
         }
         this.isLoading = false;
       },
@@ -74,30 +101,21 @@ export class MedicinsComponent implements OnInit {
         console.error('Error fetching drugs:', err);
         this.error = 'Failed to load medicines. Please try again later.';
         this.isLoading = false;
-        this.allDrugsSubject.next([]); // Clear drugs on error
+        this.drugs = [];
+        this.totalItems = 0;
+        this.totalPages = 0;
       }
     });
   }
 
-  // Method to handle search input changes
   onSearchChange(term: string): void {
-    this.searchTermSubject.next(term);
-  }
-
-  // Pagination logic
-  get totalPages(): number {
-    return Math.ceil(this.totalItems / this.itemsPerPage);
-  }
-
-  // Method to get drugs for the current page
-  getPagedDrugs(drugs: Drug[]): Drug[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    return drugs.slice(startIndex, startIndex + this.itemsPerPage);
+    this.searchTermSubject.next(term.trim());
   }
 
   goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
       this.currentPage = page;
+      this.fetchDrugs();
     }
   }
 
@@ -107,6 +125,11 @@ export class MedicinsComponent implements OnInit {
 
   nextPage(): void {
     this.goToPage(this.currentPage + 1);
+  }
+
+  // Method to navigate to the Add Drug page
+  navigateToAddDrug(): void {
+    this.router.navigate(['/medicines/add']); // Navigate to the add drug route
   }
 }
 

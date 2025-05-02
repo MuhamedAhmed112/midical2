@@ -2,16 +2,14 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Observable, Subject, throwError, of } from 'rxjs'; // Added 'of' for catchError return
-import { debounceTime, distinctUntilChanged, switchMap, takeUntil, tap, catchError } from 'rxjs/operators';
-// Corrected relative paths
-import { DrugService, Drug, ReminderPayload } from '../../../shared/services/drug/drug.service';
+import { Observable, Subject, throwError, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, takeUntil, tap, catchError, map } from 'rxjs/operators'; // Added map
+import { DrugService, Drug, ReminderPayload, PaginatedDrugs } from '../../../shared/services/drug/drug.service'; // Import PaginatedDrugs
 import { Authiserviceservice } from '../../../shared/services/authntication/Authiservice.service';
 
-// Interface for the decoded JWT token (adjust based on actual token structure)
 interface DecodedToken {
-  sub?: string; // Assuming 'sub' holds the user ID
-  [key: string]: any; // Allow other properties
+  sub?: string;
+  [key: string]: any;
 }
 
 @Component({
@@ -38,7 +36,7 @@ export class DrugReminderComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private drugService: DrugService, // Injection should work now with correct imports
+    private drugService: DrugService,
     private authService: Authiserviceservice,
     private fb: FormBuilder
   ) {
@@ -78,11 +76,12 @@ export class DrugReminderComponent implements OnInit, OnDestroy {
       switchMap(term => {
         if (!term || term.length < 1) {
           this.isLoading = false;
-          return of([]); // Use of([]) to return Observable<Drug[]>
+          return of([]); // Return Observable<Drug[]>
         }
-        // Corrected catchError usage inside switchMap
-        return this.drugService.searchDrugs(term).pipe(
-          catchError((err): Observable<Drug[]> => { // Explicitly type the return Observable
+        // Use getDrugs for searching, map the result to Drug[]
+        return this.drugService.getDrugs(1, 10, term).pipe( // Use getDrugs with page 1, size 10
+          map((response: PaginatedDrugs) => response.items || []), // Extract items array
+          catchError((err): Observable<Drug[]> => {
             console.error('Error searching drugs:', err);
             this.isLoading = false;
             this.submitStatus = { success: false, message: 'Error searching for drugs.' };
@@ -120,7 +119,6 @@ export class DrugReminderComponent implements OnInit, OnDestroy {
         this.submitStatus = { success: false, message: 'User not logged in.' };
     }
 
-    // Added type annotation for userData parameter
     this.authService.userData.pipe(takeUntil(this.destroy$)).subscribe((userData: DecodedToken | null) => {
         if (userData && userData.sub) {
             this.userId = userData.sub;

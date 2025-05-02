@@ -1,17 +1,25 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http'; // Import HttpParams
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment'; // Adjust path as needed
+import { environment } from '../../../../environments/environment';
 
-// Define an interface for the Drug data structure based on API response
+// Define an interface for the Drug data structure
 export interface Drug {
-  id: number; // Assuming an ID field
+  id: number;
   name: string;
   description: string;
-  imageUrl?: string; // Optional image URL
-  dosage?: string; // Added dosage property (adjust type if needed, e.g., number)
+  imageUrl?: string;
+  dosage?: string;
   // Add other relevant fields based on the actual API response
-  // e.g., sideEffects, manufacturer, etc.
+}
+
+// Define an interface for the paginated response from the API (Keep for reference, but service returns 'any')
+export interface PaginatedDrugs {
+  items: Drug[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  // Adjust based on the actual API response structure
 }
 
 // Define the payload for adding a reminder
@@ -27,32 +35,45 @@ export interface ReminderPayload {
   providedIn: 'root'
 })
 export class DrugService {
-  private drugApiUrl = `${environment.apiUrl}/api/Drug`; // Base URL for Drug API
-  private reminderApiUrl = `${environment.apiUrl}/api/Reminder`; // Base URL for Reminder API
+  private drugApiUrl = `${environment.apiUrl}/api/Drug`;
+  private reminderApiUrl = `${environment.apiUrl}/api/Reminder`;
 
   constructor(private http: HttpClient) { }
 
-  // Method to get all drugs
-  // The API might return Drug[] directly or { data: Drug[] }
-  getAllDrugs(): Observable<Drug[] | { data: Drug[] }> {
-    // Assuming the endpoint is GetALl (case-sensitive)
-    return this.http.get<Drug[] | { data: Drug[] }>(`${this.drugApiUrl}/GetALl`);
+  // Method to get drugs with pagination and search - returns 'any' to allow component flexibility
+  getDrugs(pageNumber: number, pageSize: number, searchTerm?: string): Observable<any> {
+    let params = new HttpParams()
+      .set('PageNumber', pageNumber.toString())
+      .set('PageSize', pageSize.toString());
+
+    if (searchTerm) {
+      params = params.set('SearchTerm', searchTerm);
+    }
+
+    // Return 'any' to let the component determine the structure
+    return this.http.get<any>(`${this.drugApiUrl}/GetALl`, { params });
   }
 
-  // Method to search drugs (Placeholder - adjust endpoint and response structure)
-  searchDrugs(term: string): Observable<Drug[]> {
-    const params = new HttpParams().set('term', term);
-    // Assuming a search endpoint like /api/Drug/Search
-    // Adjust the endpoint and expected response structure (e.g., if it returns { data: Drug[] })
-    return this.http.get<Drug[]>(`${this.drugApiUrl}/GetAll?SearchTerm`, { params });
+  // Method to get a single drug by ID
+  getDrugById(id: number): Observable<Drug> {
+    return this.http.get<Drug>(`${this.drugApiUrl}/${id}`);
+  }
+
+  // Method to add a drug (Admin only - Placeholder)
+  addDrug(drugData: FormData): Observable<Drug> { // Assuming form data for image upload
+    // Requires authentication/authorization header
+    return this.http.post<Drug>(`${this.drugApiUrl}/Add`, drugData);
+  }
+
+  // Method to delete a drug (Admin only - Placeholder)
+  deleteDrug(id: number): Observable<void> {
+    // Requires authentication/authorization header
+    return this.http.delete<void>(`${this.drugApiUrl}/${id}`);
   }
 
   // Method to add a reminder (Placeholder - adjust endpoint and response structure)
-  addReminder(payload: ReminderPayload): Observable<any> { // Use 'any' or a specific response interface
-    // Assuming an endpoint like POST /api/Reminder/Add
+  addReminder(payload: ReminderPayload): Observable<any> {
     return this.http.post<any>(`${this.reminderApiUrl}/Add`, payload);
   }
-
-  // Add other methods if needed (e.g., getDrugById)
 }
 

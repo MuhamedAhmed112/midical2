@@ -1,34 +1,57 @@
 <div class="container py-5">
-  <div class="row align-items-start">
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="text-center py-5 loading-container">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3 text-body-secondary">Loading drug details...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error && !isLoading" class="alert alert-danger text-center">
+    <i class="fa-solid fa-circle-exclamation me-2"></i> {{ error }}
+  </div>
+
+  <!-- Drug Details Content -->
+  <div *ngIf="drug && !isLoading && !error" class="row align-items-start">
     <div class="col-md-4">
-      <img src="../../../../assets/images/R1.jpeg" alt="Panadol 500mg" class="img-fluid rounded">
+      <img [src]="drug.imageUrl || '../../../../assets/images/default-medicine.jpg'" 
+           alt="{{ drug.name }}" 
+           class="img-fluid rounded shadow-sm"
+           onerror="this.src=\'../../../../assets/images/default-medicine.jpg\'">
     </div>
     <div class="col-md-8">
       <div>
-        <h3>Panadol 500 mg</h3>
-      <h5 class="text-secondary">Film-Coated Tablets</h5>
-      <div class="d-flex align-items-center my-3">
-        <span class="rounded-3 border-1 border-black ico text-secondary"><i class="fa-solid fa-capsules"></i></span>
-        <strong class="ms-2">500 mg Paracetamol</strong>
-      </div>
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <h3 class="fw-bold">{{ drug.name }}</h3>
+          <!-- Admin Delete Button -->
+          <button *ngIf="isAdmin" 
+                  class="btn btn-danger btn-sm ms-3" 
+                  (click)="deleteDrug()" 
+                  [disabled]="isLoading">
+            <i class="fa-solid fa-trash me-1"></i> Delete
+          </button>
+        </div>
+        <!-- Dosage Info (Example) -->
+        <div *ngIf="drug.dosage" class="d-flex align-items-center my-3">
+          <span class="rounded-3 border-1 border-black ico text-secondary"><i class="fa-solid fa-pills"></i></span>
+          <strong class="ms-2">{{ drug.dosage }}</strong>
+        </div>
 
-      <p>
-        Get effective pain relief with Panadol 500 mg Film-Coated Tablets, which provide faster paracetamol absorption compared to standard paracetamol tablets.
-      </p>
-
-      @if (showMore) {
         <p>
-          We all know that everyday aches and pains can sometimes get in the way of life. When they do, reach for an effective pain relief tablet with a fast absorption that can get to work quickly and leaves the body naturally in 24 hours – like Panadol 500 mg Film-Coated Tablets.
+          {{ drug.description }}
+          <!-- Removed static text and toggle logic, display full description -->
         </p>
-      }
 
-      <a class="btn btn-link p-0" (click)="toggleMore()">
-        {{ showMore ? 'Read less' : 'Read more' }}
-      </a>
+        <!-- Add more details here if available from the API -->
+        <!-- e.g., Side Effects, Manufacturer -->
+
       </div>
+
+      <!-- Static Dosage Table (Keep or replace with dynamic data if available) -->
       <div class="mt-5">
-        <h5 class="fw-semibold">Dosage information</h5>
-        <div class="table-responsive  mt-3">
+        <h5 class="fw-semibold">Dosage information (Example)</h5>
+        <div class="table-responsive mt-3">
           <table class="table text-center border rounded-3 overflow-hidden w-50 mt-2">
             <thead class="table-primary">
               <tr>
@@ -49,8 +72,9 @@
           </table>
         </div>
         <p class="text-muted mt-2">Not suitable for children under 10 years.</p>
+      </div>
+
     </div>
-
-
   </div>
 </div>
+

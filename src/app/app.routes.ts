@@ -38,7 +38,7 @@ export const routes: Routes = [
   {path: 'drug-reminder', component: DrugReminderComponent, canActivate: [RoleAuthGuard] }, 
   {path: 'Research' , component: ReSearchComponent },
   {path: 'Careers' , component: CareersComponent  },
-  {path: 'drugDetails' , component: DrugDetailsComponent},
+  {path: 'drugDetails/:id' , component: DrugDetailsComponent},
   {path: 'Commitment' , component: CommitmentComponent  },
   {path: 'Contact_Us' , component: ContactUsComponent },
   {path: 'article' , component: ArticleComponent }, 

@@ -2,7 +2,7 @@
 
 .hero-section {
   /* Define background image in CSS for better management */
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("assets/images/hero-background-modern.jpg") no-repeat center center;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/src/assets//images/hero-background-modern.jpg") no-repeat center center;
   background-size: cover;
   min-height: 70vh;
   padding: 6rem 0;
