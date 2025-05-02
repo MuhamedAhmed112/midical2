@@ -1,5 +1,129 @@
+/* Article Page Specific Styles */
+
+.articles-header {
+  /* Use a subtle gradient or image background */
+  background: linear-gradient(rgba(var(--bs-primary-rgb), 0.8), rgba(var(--bs-primary-rgb), 0.6)), url('assets/images/article-header-bg.jpg') no-repeat center center;
+  background-size: cover;
+  border-bottom: 3px solid var(--bs-primary);
+}
+
+.articles-header h1 {
+  font-weight: 700; /* Bolder title */
+}
+
+.articles-header .lead {
+  opacity: 0.9;
+}
+
+.filters-bar {
+  border-radius: 0.5rem; /* Slightly rounded corners */
+  border: 1px solid var(--bs-border-color);
+}
+
+.filters-bar .input-group-text {
+  background-color: var(--bs-secondary-bg);
+  border-right: 0;
+  color: var(--bs-secondary-color);
+}
+
+.filters-bar .form-control,
+.filters-bar .form-select {
+  /* Uses default Bootstrap form styling which is theme-aware */
+}
+
+.filters-bar .form-control:focus,
+.filters-bar .form-select:focus {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+.article-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 0.5rem; /* Consistent rounded corners */
+  overflow: hidden; /* Ensure image corners are rounded */
+  background-color: var(--bs-card-bg);
+  border: 1px solid var(--bs-border-color-translucent);
+}
+
+.article-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--bs-box-shadow-lg) !important;
+}
+
 .article-image {
-    width: 100%;
-    height: 400px; 
-    object-fit: cover; 
-  }
+  height: 200px; /* Increased height */
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.article-card:hover .article-image {
+  transform: scale(1.05); /* Subtle zoom on hover */
+}
+
+.article-card .card-body {
+  padding: 1.25rem; /* More padding */
+}
+
+.article-card .card-title {
+  color: var(--bs-heading-color);
+  font-weight: 600; /* Slightly bolder title */
+}
+
+.article-card .badge {
+  font-size: 0.75rem; /* Smaller badges */
+}
+
+.article-card .card-text {
+  color: var(--bs-secondary-color);
+  line-height: 1.6;
+}
+
+.article-card .card-footer {
+  background-color: var(--bs-tertiary-bg);
+  border-top: 1px solid var(--bs-border-color-translucent);
+  font-size: 0.8rem;
+}
+
+/* Pagination Styling */
+.pagination .page-link {
+  color: var(--bs-primary);
+  background-color: var(--bs-pagination-bg);
+  border-color: var(--bs-pagination-border-color);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.pagination .page-link:hover {
+  color: var(--bs-pagination-hover-color);
+  background-color: var(--bs-pagination-hover-bg);
+  border-color: var(--bs-pagination-hover-border-color);
+}
+
+.pagination .page-item.disabled .page-link {
+  color: var(--bs-pagination-disabled-color);
+  background-color: var(--bs-pagination-disabled-bg);
+  border-color: var(--bs-pagination-disabled-border-color);
+}
+
+.pagination .page-item.active .page-link {
+  color: var(--bs-pagination-active-color);
+  background-color: var(--bs-pagination-active-bg);
+  border-color: var(--bs-pagination-active-border-color);
+  font-weight: bold;
+}
+
+/* Loading and No Articles Styling */
+.loading-container .spinner-border,
+.no-articles-container i {
+  color: var(--bs-primary);
+}
+
+.loading-container p,
+.no-articles-container p {
+  color: var(--bs-secondary-color);
+}
+
+/* Ensure Add Article button looks good */
+.articles-header .btn-light {
+  /* Bootstrap handles theme switching */
+}
+

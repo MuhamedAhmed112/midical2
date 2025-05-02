@@ -1,22 +1,24 @@
-<div class="container mt-5">
-  <h2>My Profile</h2>
+<div class="profile-container container">
+  <div class="profile-header">
+    <h2>My Profile</h2>
+  </div>
 
   <!-- Loading Indicator -->
-  <div *ngIf="isLoading" class="text-center">
-    <div class="spinner-border" role="status">
+  <div *ngIf="isLoading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
 
   <!-- Error Message -->
-  <div *ngIf="errorMessage" class="alert alert-danger">
+  <div *ngIf="errorMessage && !isLoading" class="alert alert-danger">
     {{ errorMessage }}
   </div>
 
   <!-- Profile Content -->
   <div *ngIf="!isLoading && !errorMessage && profile">
     <!-- Tabs Navigation -->
-    <ul class="nav nav-tabs mb-3">
+    <ul class="nav nav-tabs mb-4">
       <li class="nav-item">
         <button class="nav-link" [class.active]="activeTab === 'info'" (click)="setActiveTab('info')">Information</button>
       </li>
@@ -29,8 +31,8 @@
       <li class="nav-item">
         <button class="nav-link" [class.active]="activeTab === 'change-image'" (click)="setActiveTab('change-image')">Update Profile Image</button>
       </li>
-      <!-- Conditionally show Sessions tab only if profile has 'specialization' property (indicative of Doctor) -->
-      <li class="nav-item" *ngIf="profile && 'specialization' in profile">
+      <!-- Conditionally show Sessions tab only if profile is Doctor -->
+      <li class="nav-item" *ngIf="isDoctor">
         <button class="nav-link" [class.active]="activeTab === 'sessions'" (click)="setActiveTab('sessions')">Manage Sessions</button>
       </li>
     </ul>
@@ -38,78 +40,171 @@
     <!-- Tab Content -->
     <div class="tab-content">
       <!-- Information Tab -->
-      <div *ngIf="activeTab === 'info'">
-        <h4>Basic Information</h4>
-        <div class="mb-3">
-          <!-- Use SVG fallback -->
-          <img [src]="profile.profileImageUrl || 'assets/images/default-avatar.svg'" 
-               alt="Profile Image" 
-               class="img-thumbnail mb-2" 
-               style="max-width: 150px;" 
-               onerror="this.src='assets/images/default-avatar.svg'">
+      <div *ngIf="activeTab === 'info'" class="info-section">
+        <div class="info-card">
+          <h4>Basic Information</h4>
+          <div class="profile-image-container">
+            <img [src]="profile.profileImageUrl || 'assets/images/default-avatar.svg'"
+                 alt="Profile Image"
+                 class="profile-image"
+                 onerror="this.src='assets/images/default-avatar.svg'">
+          </div>
+          <div class="info-item">
+            <strong>Full Name:</strong> <span>{{ profile.fullName }}</span>
+          </div>
+          <div class="info-item">
+            <strong>Email:</strong> <span>{{ profile.email }}</span>
+          </div>
         </div>
-        <p><strong>Full Name:</strong> {{ profile.fullName }}</p>
-        <p><strong>Email:</strong> {{ profile.email }}</p>
 
-       <!-- Patient Specific Info -->
-<div *ngIf="userProfile">
-  <p><strong>Date of Birth:</strong> {{ userProfile.dob | date:'longDate' }}</p>
-  <p><strong>Questions Asked:</strong> {{ userProfile.questionsCount }}</p>
-  <p><strong>Upcoming Appointments:</strong> {{ userProfile.upcomingAppointments }}</p>
-</div>
+        <!-- Patient Specific Info -->
+        <div *ngIf="userProfile" class="info-card">
+           <h4>Patient Details</h4>
+           <div class="info-item">
+             <strong>Date of Birth:</strong> <span>{{ userProfile.dob | date:'longDate' }}</span>
+           </div>
+           <div class="info-item">
+             <strong>Questions Asked:</strong> <span>{{ userProfile.questionsCount }}</span>
+           </div>
+           <div class="info-item">
+             <strong>Upcoming Appointments:</strong> <span>{{ userProfile.upcomingAppointments }}</span>
+           </div>
+        </div>
 
-<!-- Doctor Specific Info -->
-<div *ngIf="doctorProfile">
-  <p><strong>Specialization:</strong> {{ doctorProfile.specialization }}</p>
-  <p><strong>Years of Experience:</strong> {{ doctorProfile.yearsOfExperience }}</p>
-  <p><strong>Rating:</strong> {{ doctorProfile.rating }}/5 ({{ doctorProfile.totalReviews }} reviews)</p>
-  <p><strong>Bio:</strong> {{ doctorProfile.bio }}</p>
-  <p><strong>Account Status:</strong> {{ doctorProfile.accountStatus }}</p>
-  <p><strong>Certification:</strong>
-    <a *ngIf="doctorProfile.certificationDocumentUrl" [href]="doctorProfile.certificationDocumentUrl" target="_blank">View Document</a>
-    <span *ngIf="!doctorProfile.certificationDocumentUrl">Not Available</span>
-  </p>
-  <p><strong>Total Answers:</strong> {{ doctorProfile.totalAnswers }}</p>
-  <p><strong>Total Appointments:</strong> {{ doctorProfile.totalAppointments }}</p>
-  <p><strong>Completed Appointments:</strong> {{ doctorProfile.completedAppointments }}</p>
-  <p><strong>Upcoming Appointments:</strong> {{ doctorProfile.upcomingAppointments }}</p>
-</div>
+        <!-- Doctor Specific Info -->
+        <div *ngIf="doctorProfile" class="info-card">
+          <h4>Doctor Details</h4>
+          <div class="info-item">
+            <strong>Specialization:</strong> <span>{{ doctorProfile.specialization }}</span>
+          </div>
+          <div class="info-item">
+            <strong>Years of Experience:</strong> <span>{{ doctorProfile.yearsOfExperience }}</span>
+          </div>
+          <div class="info-item">
+            <strong>Rating:</strong> <span>{{ doctorProfile.rating }}/5 ({{ doctorProfile.totalReviews }} reviews)</span>
+          </div>
+          <div class="info-item">
+            <strong>Bio:</strong> <span>{{ doctorProfile.bio }}</span>
+          </div>
+          <div class="info-item">
+            <strong>Account Status:</strong> <span>{{ doctorProfile.accountStatus }}</span>
+          </div>
+          <div class="info-item">
+            <strong>Certification:</strong>
+            <a *ngIf="doctorProfile.certificationDocumentUrl" [href]="doctorProfile.certificationDocumentUrl" target="_blank">View Document</a>
+            <span *ngIf="!doctorProfile.certificationDocumentUrl">Not Available</span>
+          </div>
+          <div class="info-item">
+            <strong>Total Answers:</strong> <span>{{ doctorProfile.totalAnswers }}</span>
+          </div>
+          <div class="info-item">
+            <strong>Total Appointments:</strong> <span>{{ doctorProfile.totalAppointments }}</span>
+          </div>
+          <div class="info-item">
+            <strong>Completed Appointments:</strong> <span>{{ doctorProfile.completedAppointments }}</span>
+          </div>
+          <div class="info-item">
+            <strong>Upcoming Appointments:</strong> <span>{{ doctorProfile.upcomingAppointments }}</span>
+          </div>
+        </div>
       </div>
 
       <!-- Change Email Tab -->
-      <div *ngIf="activeTab === 'change-email'">
+      <div *ngIf="activeTab === 'change-email'" class="form-section">
         <h4>Change Email</h4>
-        <!-- Placeholder for form -->
-        <p>Email change form placeholder.</p>
-        <button class="btn btn-primary" (click)="updateEmail()">Update Email (Placeholder)</button>
+        <form [formGroup]="changeEmailForm" (ngSubmit)="updateEmail()">
+          <div class="mb-3">
+            <label for="newEmail" class="form-label">New Email Address</label>
+            <input type="email" id="newEmail" class="form-control" formControlName="newEmail">
+            <div *ngIf="changeEmailForm.get('newEmail')?.invalid && (changeEmailForm.get('newEmail')?.dirty || changeEmailForm.get('newEmail')?.touched)" class="text-danger mt-1">
+              <small *ngIf="changeEmailForm.get('newEmail')?.errors?.['required']">Email is required.</small>
+              <small *ngIf="changeEmailForm.get('newEmail')?.errors?.['email']">Please enter a valid email address.</small>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" [disabled]="changeEmailForm.invalid">Update Email</button>
+          <div *ngIf="successMessage && activeTab === 'change-email'" class="alert alert-success mt-3">{{ successMessage }}</div>
+          <div *ngIf="errorMessage && activeTab === 'change-email'" class="alert alert-danger mt-3">{{ errorMessage }}</div>
+        </form>
       </div>
 
       <!-- Change Password Tab -->
-      <div *ngIf="activeTab === 'change-password'">
+      <div *ngIf="activeTab === 'change-password'" class="form-section">
         <h4>Change Password</h4>
-        <!-- Placeholder for form -->
-        <p>Password change form placeholder.</p>
-        <button class="btn btn-primary" (click)="updatePassword()">Update Password (Placeholder)</button>
+        <form [formGroup]="changePasswordForm" (ngSubmit)="updatePassword()">
+          <div class="mb-3">
+            <label for="oldPassword" class="form-label">Old Password</label>
+            <input type="password" id="oldPassword" class="form-control" formControlName="oldPassword">
+            <div *ngIf="changePasswordForm.get('oldPassword')?.invalid && (changePasswordForm.get('oldPassword')?.dirty || changePasswordForm.get('oldPassword')?.touched)" class="text-danger mt-1">
+              <small *ngIf="changePasswordForm.get('oldPassword')?.errors?.['required']">Old password is required.</small>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="newPassword" class="form-label">New Password</label>
+            <input type="password" id="newPassword" class="form-control" formControlName="newPassword">
+            <div *ngIf="changePasswordForm.get('newPassword')?.invalid && (changePasswordForm.get('newPassword')?.dirty || changePasswordForm.get('newPassword')?.touched)" class="text-danger mt-1">
+              <small *ngIf="changePasswordForm.get('newPassword')?.errors?.['required']">New password is required.</small>
+              <small *ngIf="changePasswordForm.get('newPassword')?.errors?.['minlength']">Password must be at least 6 characters long.</small>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+            <input type="password" id="confirmPassword" class="form-control" formControlName="confirmPassword">
+            <div *ngIf="changePasswordForm.get('confirmPassword')?.invalid && (changePasswordForm.get('confirmPassword')?.dirty || changePasswordForm.get('confirmPassword')?.touched)" class="text-danger mt-1">
+              <small *ngIf="changePasswordForm.get('confirmPassword')?.errors?.['required']">Confirm password is required.</small>
+            </div>
+            <div *ngIf="changePasswordForm.errors?.['mismatch'] && changePasswordForm.get('confirmPassword')?.touched" class="text-danger mt-1">
+              <small>Passwords do not match.</small>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" [disabled]="changePasswordForm.invalid">Update Password</button>
+          <div *ngIf="successMessage && activeTab === 'change-password'" class="alert alert-success mt-3">{{ successMessage }}</div>
+          <div *ngIf="errorMessage && activeTab === 'change-password'" class="alert alert-danger mt-3">{{ errorMessage }}</div>
+        </form>
       </div>
 
       <!-- Change Profile Image Tab -->
-      <div *ngIf="activeTab === 'change-image'">
+      <div *ngIf="activeTab === 'change-image'" class="form-section">
         <h4>Update Profile Image</h4>
-        <!-- Placeholder for form -->
-        <p>Profile image upload placeholder.</p>
-        <!-- Corrected event handling -->
-        <input type="file" (change)="onFileSelected($event)">
-        <!-- Corrected function call and disabled state -->
+        <div class="mb-3">
+          <label for="profileImage" class="form-label">Select new image:</label>
+          <input type="file" id="profileImage" class="form-control" (change)="onFileSelected($event)" accept="image/*">
+        </div>
+        <!-- Image Preview (Optional) -->
+        <!-- <div *ngIf="profileImageFile"> ... preview logic ... </div> -->
         <button class="btn btn-primary mt-2" (click)="updateProfileImage()" [disabled]="!profileImageFile">Upload Image</button>
+        <div *ngIf="successMessage && activeTab === 'change-image'" class="alert alert-success mt-3">{{ successMessage }}</div>
+        <div *ngIf="errorMessage && activeTab === 'change-image'" class="alert alert-danger mt-3">{{ errorMessage }}</div>
       </div>
 
-      <!-- Manage Sessions Tab (Doctor Only - Check if 'specialization' exists) -->
-      <div *ngIf="activeTab === 'sessions' && profile && 'specialization' in profile">
+      <!-- Manage Sessions Tab (Doctor Only) -->
+      <div *ngIf="activeTab === 'sessions' && isDoctor" class="session-list">
         <h4>Manage Active Sessions</h4>
-        <!-- Placeholder for session list -->
-        <p>Session management placeholder.</p>
-        <button class="btn btn-danger me-2" (click)="terminateSession(1)">Terminate Session 1 (Placeholder)</button>
-        <button class="btn btn-danger" (click)="terminateAllSessions()">Terminate All Other Sessions (Placeholder)</button>
+        <div *ngIf="isLoadingSessions" class="text-center my-4">
+          <div class="spinner-border spinner-border-sm text-secondary" role="status">
+            <span class="visually-hidden">Loading sessions...</span>
+          </div>
+        </div>
+        <div *ngIf="!isLoadingSessions && sessions.length > 0">
+          <ul class="list-group mb-3">
+            <li *ngFor="let session of sessions" class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
+              <div class="session-details mb-2 mb-sm-0">
+                <div><strong>Device:</strong> <span>{{ session.userAgent }}</span></div>
+                <div><strong>IP Address:</strong> <span>{{ session.ipAddress }}</span></div>
+                <div><strong>Last Activity:</strong> <span>{{ session.lastActivity | date:'medium' }}</span></div>
+                <!-- <div><strong>Expires At:</strong> <span>{{ session.expiryAt | date:'medium' }}</span></div> -->
+              </div>
+              <button class="btn btn-sm btn-warning align-self-start align-self-sm-center" (click)="terminateSession(session.id)" [disabled]="!session.isActive">
+                {{ session.isActive ? 'Terminate' : 'Terminated' }}
+              </button>
+            </li>
+          </ul>
+          <button class="btn btn-danger" (click)="terminateAllSessions()">Terminate All Other Sessions</button>
+        </div>
+        <div *ngIf="!isLoadingSessions && sessions.length === 0">
+          <p class="text-muted">No other active sessions found.</p>
+        </div>
+        <div *ngIf="successMessage && activeTab === 'sessions'" class="alert alert-success mt-3">{{ successMessage }}</div>
+        <div *ngIf="errorMessage && activeTab === 'sessions'" class="alert alert-danger mt-3">{{ errorMessage }}</div>
       </div>
 
     </div>

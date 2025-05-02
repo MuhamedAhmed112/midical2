@@ -1,33 +1,25 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { HttpClient, HttpParams } from '@angular/common/http'; // Import HttpParams
+import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment'; // Adjust path as needed
 
-// Define an interface for the drug data based on the example response
+// Define an interface for the Drug data structure based on API response
 export interface Drug {
-  id: number;
-  dosage: string; // Assuming 'dosage' might contain the name or description?
-  name: string; // Or is 'name' the primary identifier?
-  sideEffect: string;
-  interaction: string;
-  drugImage: string | null; // URL or path to the image
+  id: number; // Assuming an ID field
+  name: string;
+  description: string;
+  imageUrl?: string; // Optional image URL
+  dosage?: string; // Added dosage property (adjust type if needed, e.g., number)
+  // Add other relevant fields based on the actual API response
+  // e.g., sideEffects, manufacturer, etc.
 }
 
-// Define an interface for the API response (assuming it might have pagination info)
-export interface DrugApiResponse {
-  // Assuming the API returns an array directly based on the example
-  // If it's nested, adjust this interface accordingly
-  // e.g., items: Drug[]; totalCount: number;
-  [index: number]: Drug; // Based on the provided example: [ {drug1}, {drug2} ]
-  length: number; // Standard array property
-}
-
-// Interface for the reminder payload
+// Define the payload for adding a reminder
 export interface ReminderPayload {
   userId: string;
   drugId: number;
-  startDate: string; // ISO format string
-  endDate: string;   // ISO format string
+  startDate: string; // ISO string format
+  endDate: string;   // ISO string format
   repeatIntervalMinutes: number;
 }
 
@@ -35,48 +27,32 @@ export interface ReminderPayload {
   providedIn: 'root'
 })
 export class DrugService {
-  // API Base URLs
-  private drugApiUrl = 'https://curefusion2.runasp.net/Api/Drug';
-  private reminderApiUrl = 'https://curefusion2.runasp.net/DrugReminder';
+  private drugApiUrl = `${environment.apiUrl}/api/Drug`; // Base URL for Drug API
+  private reminderApiUrl = `${environment.apiUrl}/api/Reminder`; // Base URL for Reminder API
 
   constructor(private http: HttpClient) { }
 
-  // Method to search for drugs
-  searchDrugs(term: string, pageNumber: number = 1, pageSize: number = 10): Observable<Drug[]> {
-    if (!term.trim()) {
-      // if no search term, return empty drug array.
-      return of([]);
-    }
-
-    let params = new HttpParams()
-      .set('SearchTerm', term)
-      .set('PageNumber', pageNumber.toString())
-      .set('PageSize', pageSize.toString());
-
-    const url = `${this.drugApiUrl}/Getall`;
-
-    return this.http.get<Drug[]>(url, { params }).pipe(
-      catchError(this.handleError<Drug[]>('searchDrugs', []))
-    );
+  // Method to get all drugs
+  // The API might return Drug[] directly or { data: Drug[] }
+  getAllDrugs(): Observable<Drug[] | { data: Drug[] }> {
+    // Assuming the endpoint is GetALl (case-sensitive)
+    return this.http.get<Drug[] | { data: Drug[] }>(`${this.drugApiUrl}/GetALl`);
   }
 
-  // Method to add a drug reminder
-  addReminder(payload: ReminderPayload): Observable<any> { // Assuming the API returns some confirmation
-    const url = `${this.reminderApiUrl}/AddReminder`;
-    return this.http.post<any>(url, payload).pipe(
-      catchError(this.handleError<any>('addReminder'))
-    );
+  // Method to search drugs (Placeholder - adjust endpoint and response structure)
+  searchDrugs(term: string): Observable<Drug[]> {
+    const params = new HttpParams().set('term', term);
+    // Assuming a search endpoint like /api/Drug/Search
+    // Adjust the endpoint and expected response structure (e.g., if it returns { data: Drug[] })
+    return this.http.get<Drug[]>(`${this.drugApiUrl}/GetAll?SearchTerm`, { params });
   }
 
-  // Basic error handling function
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(`${operation} failed: ${error.message}`);
-      // TODO: Implement more robust error handling/logging
-      // Maybe show a user-friendly message
-      // Let the app keep running by returning an empty result or rethrow
-      return of(result as T);
-    };
+  // Method to add a reminder (Placeholder - adjust endpoint and response structure)
+  addReminder(payload: ReminderPayload): Observable<any> { // Use 'any' or a specific response interface
+    // Assuming an endpoint like POST /api/Reminder/Add
+    return this.http.post<any>(`${this.reminderApiUrl}/Add`, payload);
   }
+
+  // Add other methods if needed (e.g., getDrugById)
 }
 

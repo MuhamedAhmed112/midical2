@@ -1,51 +1,116 @@
-<div class="parent p-3">
-  <section class="container shadow-sm w-75 bg-white mt-5">
-    <header class="d-flex justify-content-center align-items-center mb-5 text-black">
-      <div class="drugHeader p-5 mt-5 d-flex justify-content-center align-items-center flex-column rounded-3">
-        <h2 class="text-center fw-bold">Search in CureFusion Encyclopedia of Medicines</h2>
+<div class="medicines-page container py-5">
 
-        <!-- Search input -->
-        <input
-          class="form-control mt-2 w-75 mt-4 border-1"
-          placeholder="Type to search..."
-          (input)="search($event)"
-        />
-
-        <p class="text-black text-center w-75 mt-4">
-          The Altibbi Encyclopedia of Medicines contains detailed information on medications and medical treatments available in the Arab world and abroad, from their uses to their side effects and contraindications.
-        </p>
-      </div>
-    </header>
-  </section>
-
-  <section class="container shadow-sm w-75 bg-white mt-3 p-4">
-    <div *ngFor="let med of pagedMedicines" class="item p-2 ms-5 my-0" routerLink="/drugDetails">
-      <h4>{{ med }}</h4>
-      <div class="line d-flex justify-content-center">
-        <hr class="w-75 text-black text-center fw-bold" />
+  <!-- Header Section -->
+  <section class="header-section card shadow-sm mb-5 bg-body-tertiary">
+    <div class="card-body p-4 p-md-5 text-center">
+      <h1 class="fw-bold mb-3">CureFusion Encyclopedia of Medicines</h1>
+      <p class="lead text-body-secondary mb-4 mx-auto" style="max-width: 700px;">
+        Detailed information on medications available in the Arab world and abroad, from uses to side effects.
+      </p>
+      <!-- Search input -->
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+          <div class="input-group input-group-lg shadow-sm">
+            <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search by name or description..."
+              [ngModel]="searchTerm$ | async"
+              (ngModelChange)="onSearchChange($event)"
+            />
+          </div>
+        </div>
       </div>
     </div>
+  </section>
 
-    <!-- Pagination -->
-    <nav class="d-flex justify-content-center mt-4">
-      <ul class="pagination">
-        <li class="page-item" [class.disabled]="currentPage === 1">
-          <a class="page-link" (click)="changePage(currentPage - 1)">Previous</a>
-        </li>
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="text-center py-5 loading-container">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3 text-body-secondary">Loading medicines...</p>
+  </div>
 
-        <li
-          class="page-item"
-          *ngFor="let page of [].constructor(totalPages); let i = index"
-          [class.active]="currentPage === i + 1"
-        >
-          <a class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</a>
-        </li>
+  <!-- Error Message -->
+  <div *ngIf="error && !isLoading" class="alert alert-danger text-center">
+    <i class="fa-solid fa-circle-exclamation me-2"></i> {{ error }}
+  </div>
 
-        <li class="page-item" [class.disabled]="currentPage === totalPages">
-          <a class="page-link" (click)="changePage(currentPage + 1)">Next</a>
-        </li>
-      </ul>
-    </nav>
+  <!-- Content Section: Display Drugs -->
+  <section *ngIf="!isLoading && !error" class="content-section">
+    <div *ngIf="filteredDrugs$ | async as filteredDrugs">
+      <div *ngIf="filteredDrugs.length > 0; else noDrugsFound">
+        <div class="row g-4">
+          <div *ngFor="let drug of getPagedDrugs(filteredDrugs)" class="col-md-6 col-lg-4 col-xl-3">
+            <div class="card h-100 drug-card shadow-sm border-0">
+              <img
+                [src]="drug.imageUrl || 'assets/images/default-medicine.jpg'"
+                class="card-img-top drug-image"
+                alt="{{ drug.name }}"
+                onerror="this.src='assets/images/default-medicine.jpg'"
+              />
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-semibold mb-2">{{ drug.name }}</h5>
+                <!-- Corrected description display with check for undefined -->
+                <p class="card-text small text-body-secondary flex-grow-1">
+                  {{ drug.description ? (drug.description | slice:0:100) + (drug.description.length > 100 ? '...' : '') : 'No description available' }}
+                </p>
+                <!-- Add a link to a detail page if available -->
+                <!-- <a [routerLink]="['/medicines', drug.id]" class="btn btn-outline-primary btn-sm mt-auto align-self-start">View Details</a> -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav *ngIf="totalPages > 1" aria-label="Medicines navigation" class="mt-5 d-flex justify-content-center">
+          <ul class="pagination shadow-sm">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </button>
+            </li>
+            <!-- Optional: Add page numbers -->
+            <li class="page-item disabled"><span class="page-link text-body-secondary">Page {{ currentPage }} of {{ totalPages }}</span></li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+
+      </div>
+      <ng-template #noDrugsFound>
+        <div class="text-center py-5 no-drugs-container">
+          <i class="fa-solid fa-pills fa-3x text-body-secondary mb-3"></i>
+          <p class="text-body-secondary">No medicines found matching your search.</p>
+        </div>
+      </ng-template>
+    </div>
   </section>
 
 </div>
+
+<!-- Add specific styles -->
+<style>
+  .drug-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .drug-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--bs-box-shadow-lg) !important;
+  }
+  .drug-image {
+    height: 160px;
+    object-fit: contain; /* Use contain to show the whole image */
+    padding: 0.5rem; /* Add some padding around the image */
+    background-color: #f8f9fa; /* Light background for the image area */
+  }
+  [data-bs-theme="dark"] .drug-image {
+      background-color: var(--bs-gray-700); /* Darker background for dark mode */
+  }
+</style>
+

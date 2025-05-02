@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { ProfileService, UserProfileDto, DoctorProfileDto } from '../../../shared/services/profile/profile.service';
+import { ProfileService, UserProfileDto, DoctorProfileDto, ChangePasswordRequest } from '../../../shared/services/profile/profile.service'; // Import ChangePasswordRequest
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; // Import necessary form modules
 import { HttpClientModule } from '@angular/common/http'; // Ensure HttpClientModule is available if not globally provided
 
@@ -41,7 +41,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   get doctorProfile(): DoctorProfileDto | null {
     return this.isDoctor && this.profile ? (this.profile as DoctorProfileDto) : null;
   }
-  
+
   get userProfile(): UserProfileDto | null {
     return !this.isDoctor && this.profile ? (this.profile as UserProfileDto) : null;
   }
@@ -103,7 +103,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error fetching profile:', err);
-        this.errorMessage = 'Failed to load profile information. Please try again later.';
+        // Display more specific error if available
+        this.errorMessage = err.error?.message || err.message || 'Failed to load profile information. Please check your connection or login status.';
         this.isLoading = false;
       }
     });
@@ -119,7 +120,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error fetching sessions:', err);
-        this.errorMessage = 'Failed to load active sessions.'; // Append or replace error message
+        this.errorMessage = err.error?.message || 'Failed to load active sessions.'; // Append or replace error message
         this.isLoadingSessions = false;
       }
     });
@@ -143,13 +144,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   updateEmail(): void {
     if (this.changeEmailForm.invalid) {
-      this.errorMessage = 'Please enter a valid email address.';
+      // Let form validation display errors
       return;
     }
     this.errorMessage = null;
     this.successMessage = null;
-    const payload = { newEmail: this.changeEmailForm.value.newEmail };
-    this.updateSub = this.profileService.changeEmail(payload).subscribe({
+    const newEmailValue = this.changeEmailForm.value.newEmail;
+    this.updateSub = this.profileService.changeEmail(newEmailValue).subscribe({
       next: () => {
         this.successMessage = 'Email updated successfully!';
         // Optionally refetch profile to update display
@@ -157,25 +158,27 @@ export class ProfileComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error updating email:', err);
-        this.errorMessage = err.error?.message || 'Failed to update email. Please try again.';
+        this.errorMessage = err.error?.title || err.error?.message || 'Failed to update email. Please try again.';
       }
     });
   }
 
   updatePassword(): void {
     if (this.changePasswordForm.invalid) {
-      this.errorMessage = 'Please fill in all password fields correctly. New password must be at least 6 characters long and match the confirmation.';
+      // Let form validation display errors
       if (this.changePasswordForm.errors?.['mismatch']) {
-        this.errorMessage = 'New password and confirmation password do not match.';
+        // Optionally set a specific message for mismatch if not handled by template
+        // this.errorMessage = 'New password and confirmation password do not match.';
       }
       return;
     }
     this.errorMessage = null;
     this.successMessage = null;
-    const payload = {
-      oldPass: this.changePasswordForm.value.oldPassword,
-      newPass: this.changePasswordForm.value.newPassword,
-      confirmPass: this.changePasswordForm.value.confirmPassword
+    // Map form values to the backend expected structure (ChangePasswordRequest)
+    const payload: ChangePasswordRequest = {
+      CurrentPassword: this.changePasswordForm.value.oldPassword,
+      NewPassword: this.changePasswordForm.value.newPassword,
+      ConfirmPassword: this.changePasswordForm.value.confirmPassword // Include confirm if backend requires it for validation
     };
     this.updateSub = this.profileService.changePassword(payload).subscribe({
       next: () => {
@@ -184,7 +187,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error updating password:', err);
-        this.errorMessage = err.error?.message || 'Failed to update password. Please check your old password and try again.';
+        this.errorMessage = err.error?.title || err.error?.message || 'Failed to update password. Please check your old password and try again.';
       }
     });
   }
@@ -205,7 +208,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.errorMessage = null;
     this.successMessage = null;
     const formData = new FormData();
-    formData.append('imageFile', this.profileImageFile, this.profileImageFile.name);
+    // Use 'Image' as the key to match the backend [FromForm] UploadImageRequest property
+    formData.append('Image', this.profileImageFile, this.profileImageFile.name);
 
     this.updateSub = this.profileService.updateProfileImage(formData).subscribe({
       next: () => {
@@ -216,7 +220,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error updating profile image:', err);
-        this.errorMessage = err.error?.message || 'Failed to update profile image. Please try again.';
+        this.errorMessage = err.error?.title || err.error?.message || 'Failed to update profile image. Please try again.';
       }
     });
   }
@@ -234,7 +238,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error(`Error terminating session ${sessionId}:`, err);
-        this.errorMessage = err.error?.message || `Failed to terminate session ${sessionId}.`;
+        this.errorMessage = err.error?.title || err.error?.message || `Failed to terminate session ${sessionId}.`;
       }
     });
   }
@@ -250,7 +254,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error terminating all sessions:', err);
-        this.errorMessage = err.error?.message || 'Failed to terminate all other sessions.';
+        this.errorMessage = err.error?.title || err.error?.message || 'Failed to terminate all other sessions.';
       }
     });
   }
