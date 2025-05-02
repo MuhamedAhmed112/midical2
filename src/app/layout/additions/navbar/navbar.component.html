@@ -1,30 +1,137 @@
-<nav class="navbar navbar-expand-lg px-5 position-sticky navcolor top-0 end-0 start-0">
+<nav class="navbar navbar-expand-lg px-4 px-lg-5 py-2 position-sticky top-0 end-0 start-0 shadow-sm bg-white">
   <div class="container-fluid">
-    <a class="navbar-brand d-flex align-items-center navIcon" routerLink="/home"></a>
+    <!-- Brand Logo -->
+    <a class="navbar-brand d-flex align-items-center me-4" routerLink="/home">
+      <!-- Replace with your actual logo -->
+      <img src="assets/images/logo-placeholder.png" alt="CureFusion Logo" height="30">
+      <span class="ms-2 fw-bold fs-5">CureFusion</span> 
+    </a>
 
-    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-      <span class="navbar-toggler-icon border-0 fs-6"></span>
+    <!-- Navbar Toggler -->
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
     </button>
 
+    <!-- Navbar Content -->
     <div class="collapse navbar-collapse" id="navbarContent">
+      
+      <!-- Main Navigation Links (Visible when logged in) -->
       <ul *ngIf="isLogin" class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item mx-3 NavLinkColor"><a routerLink="Medicines" routerLinkActive="bg-white activeLink" class="nav-link rounded-4">Medicines</a></li>
-        <li class="nav-item mx-3 NavLinkColor"><a routerLink="article" routerLinkActive="bg-white activeLink" class="nav-link rounded-4">Articles</a></li>
-        <li class="nav-item mx-2 NavLinkColor"><a routerLink="Research" routerLinkActive="bg-white activeLink" class="nav-link rounded-4">Research</a></li>
-        <li class="nav-item mx-2 NavLinkColor"><a routerLink="Commitment" routerLinkActive="bg-white activeLink" class="nav-link rounded-4">Commitment</a></li>
-        <li class="nav-item mx-2 NavLinkColor"><a routerLink="Careers" routerLinkActive="bg-white activeLink" class="nav-link rounded-4">Careers</a></li>
-        <li class="nav-item mx-2 NavLinkColor"><a routerLink="Contact_Us" routerLinkActive="bg-white activeLink" class="nav-link rounded-4">Contact Us</a></li>
-        <li class="nav-item mx-2 NavLinkColor"><a routerLink="drug-reminder" routerLinkActive="bg-white activeLink" class="nav-link rounded-4">Drug Reminder</a></li>
+        <li class="nav-item mx-1">
+          <a class="nav-link" routerLink="/doctors" routerLinkActive="active">Find Doctors</a>
+        </li>
+
+        <!-- Medication Dropdown -->
+        <li class="nav-item dropdown mx-1">
+          <a class="nav-link dropdown-toggle" href="#" id="medicationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Medication
+          </a>
+          <ul class="dropdown-menu shadow-sm border-0" aria-labelledby="medicationDropdown">
+            <li><a class="dropdown-item" routerLink="/Medicines" routerLinkActive="active">Medicine Encyclopedia</a></li>
+            <li><a class="dropdown-item" routerLink="/drug-reminder" routerLinkActive="active">Drug Reminder</a></li>
+          </ul>
+        </li>
+
+        <!-- Resources Dropdown -->
+        <li class="nav-item dropdown mx-1">
+          <a class="nav-link dropdown-toggle" href="#" id="resourcesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Resources
+          </a>
+          <ul class="dropdown-menu shadow-sm border-0" aria-labelledby="resourcesDropdown">
+            <li><a class="dropdown-item" routerLink="/article" routerLinkActive="active">Health Articles</a></li>
+            <li><a class="dropdown-item" routerLink="/Research" routerLinkActive="active">Medical Research</a></li>
+          </ul>
+        </li>
+
+        <!-- More Dropdown -->
+        <li class="nav-item dropdown mx-1">
+          <a class="nav-link dropdown-toggle" href="#" id="moreDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            More
+          </a>
+          <ul class="dropdown-menu shadow-sm border-0" aria-labelledby="moreDropdown">
+            <li><a class="dropdown-item" routerLink="/Careers" routerLinkActive="active">Careers</a></li>
+            <li><a class="dropdown-item" routerLink="/Contact_Us" routerLinkActive="active">Contact Us</a></li>
+            <li><a class="dropdown-item" routerLink="/Commitment" routerLinkActive="active">Our Commitment</a></li>
+          </ul>
+        </li>
       </ul>
 
-      <div class="ms-auto" *ngIf="!isLogin">
-        <button class="btn btn-outline-light btn-sm me-2 px-3 pure-moving-border" routerLink="/login">Login</button>
-        <button class="btn btn-outline-light btn-sm pure-moving-border" routerLink="/signupinfo">Sign Up</button>
+      <!-- Spacer for logged-in users to push profile to the right -->
+      <div *ngIf="isLogin" class="flex-grow-1"></div>
+
+      <!-- Login/Signup Buttons (Visible when logged out) -->
+      <div class="d-flex align-items-center ms-lg-auto" *ngIf="!isLogin">
+        <a class="btn btn-outline-primary btn-sm me-2 px-3" routerLink="/login">Login</a>
+        <a class="btn btn-primary btn-sm px-3" routerLink="/signupinfo">Sign Up</a>
       </div>
 
-      <div class="ms-auto" *ngIf="isLogin">
-        <button (click)="_Authiserviceservice.logout()" class="btn btn-outline-light btn-sm pure-moving-border">Logout</button>
+      <!-- Profile Dropdown (Visible when logged in) -->
+      <div class="nav-item dropdown" *ngIf="isLogin">
+        <a 
+          class="nav-link dropdown-toggle d-flex align-items-center" 
+          href="#" 
+          id="profileDropdown" 
+          role="button" 
+          data-bs-toggle="dropdown" 
+          aria-expanded="false"
+        >
+          <img 
+            [src]="profileImageUrl || 'assets/images/default-avatar.svg'" 
+            alt="Profile" 
+            class="profile-icon rounded-circle me-2"
+            onerror="this.src='assets/images/default-avatar.svg'"
+          /> <!-- Use SVG fallback -->
+          <span class="d-none d-lg-inline">{{ userFullName | slice:0:15 }}{{ (userFullName?.length || 0) > 15 ? '...' : '' || 'Account' }}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="profileDropdown">
+          <li><h6 class="dropdown-header text-muted">{{ userFullName || 'User Account' }}</h6></li>
+          <li><a class="dropdown-item" routerLink="/profile" routerLinkActive="active"><i class="fa-solid fa-user-circle me-2"></i>Profile</a></li>
+          <li><a class="dropdown-item" routerLink="/Appointment" routerLinkActive="active"><i class="fa-solid fa-calendar-check me-2"></i>My Appointments</a></li> 
+          <li><hr class="dropdown-divider"></li>
+          <li><button class="dropdown-item text-danger" (click)="logout()"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</button></li>
+        </ul>
       </div>
+
     </div>
   </div>
 </nav>
+
+<!-- Add Custom CSS for Navbar -->
+<style>
+  .navbar {
+    z-index: 1030; /* Ensure navbar stays on top */
+  }
+  .navbar-brand img {
+    height: 30px;
+  }
+  .nav-link {
+    color: #6c757d; /* Subdued color for links */
+    font-weight: 500;
+    padding: 0.5rem 0.8rem;
+    transition: color 0.2s ease;
+  }
+  .nav-link:hover, .nav-link.active {
+    color: #0d6efd; /* Primary color on hover/active */
+  }
+  .dropdown-menu {
+    font-size: 0.95rem;
+  }
+  .dropdown-item {
+     padding: 0.5rem 1rem;
+     transition: background-color 0.2s ease;
+  }
+  .dropdown-item i {
+    width: 1.2em; /* Align icons */
+    color: #6c757d;
+  }
+   .dropdown-item:active {
+     background-color: #e9ecef;
+   }
+  .profile-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border: 1px solid #dee2e6;
+  }
+</style>
+

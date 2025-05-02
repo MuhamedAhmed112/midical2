@@ -1,23 +1,66 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Authiserviceservice } from '../../../shared/services/authntication/Authiservice.service';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
+import { ProfileService, UserProfileDto, DoctorProfileDto } from '../../../shared/services/profile/profile.service'; // Import DTOs
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
   imports: [RouterLink, RouterLinkActive , CommonModule],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css'
+  styleUrls: ['./navbar.component.css'] 
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   isLogin: boolean = false;
+  profileImageUrl: string | null = null; 
+  userFullName: string | null = null; 
+  private userSub: Subscription | null = null;
+  private profileSub: Subscription | null = null;
 
-  constructor(public _Authiserviceservice: Authiserviceservice) {}
+  constructor(
+    public _Authiserviceservice: Authiserviceservice,
+    private profileService: ProfileService, 
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this._Authiserviceservice.userData.subscribe(() => {
-      this.isLogin = this._Authiserviceservice.userData.getValue() != null;
+    this.userSub = this._Authiserviceservice.userData.subscribe(user => {
+      this.isLogin = !!user;
+      if (this.isLogin) {
+        this.fetchProfileData();
+      } else {
+        // Reset profile data on logout
+        this.profileImageUrl = null;
+        this.userFullName = null;
+      }
     });
   }
+
+  ngOnDestroy(): void {
+    this.userSub?.unsubscribe();
+    this.profileSub?.unsubscribe();
+  }
+
+  fetchProfileData(): void {
+    this.profileSub = this.profileService.getProfile().subscribe({
+      next: (profile: UserProfileDto | DoctorProfileDto) => { // Use imported DTOs
+        this.userFullName = profile.fullName;
+        // Ensure the path is correctly formed if it's relative from the API
+        this.profileImageUrl = profile.profileImageUrl ? profile.profileImageUrl : 'assets/images/default-avatar.png'; 
+      },
+      error: (err) => {
+        console.error('Error fetching profile data:', err);
+        this.userFullName = 'User'; // Fallback name
+        this.profileImageUrl = 'assets/images/default-avatar.png'; // Fallback image
+      }
+    });
+  }
+
+  logout(): void {
+    this._Authiserviceservice.logout();
+    this.router.navigate(['/home']); 
+  }
 }
+

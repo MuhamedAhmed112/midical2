@@ -1,107 +1,164 @@
-<div class="container mt-5">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Articles</h2>
-    <!-- Add Button -->
-    <button *ngIf="canAddArticle()" class="btn btn-success" routerLink="/article/add">
-      <i class="fas fa-plus me-1"></i> Add Article
-    </button>
-  </div>
+<div class="articles-page">
 
-  <!-- Filtering and Sorting Controls -->
-  <div class="row mb-4 gy-2 gx-3 align-items-center">
-    <!-- Search -->
-    <div class="col-sm-6 col-md-4 col-lg-3">
-      <label for="searchTermInput" class="visually-hidden">Search</label>
-      <input 
-        type="text" 
-        class="form-control" 
-        id="searchTermInput" 
-        placeholder="Search articles..." 
-        [ngModel]="searchTerm" 
-        (ngModelChange)="onSearchChange($event)">
-    </div>
-    <!-- Category -->
-    <div class="col-sm-6 col-md-4 col-lg-3">
-      <label for="categorySelect" class="visually-hidden">Category</label>
-      <select class="form-select" id="categorySelect" [(ngModel)]="selectedCategory" (ngModelChange)="applyFilters()">
-        <option [ngValue]="null">All Categories</option>
-        <option *ngFor="let category of categories" [ngValue]="category.id">{{ category.name }}</option>
-        <!-- TODO: Get actual category names if available -->
-      </select>
-    </div>
-    <!-- Tag -->
-    <div class="col-sm-6 col-md-4 col-lg-3">
-        <label for="tagInput" class="visually-hidden">Tag</label>
-        <input 
-          type="text" 
-          class="form-control" 
-          id="tagInput" 
-          placeholder="Filter by tag..." 
-          [(ngModel)]="selectedTag" 
-          (ngModelChange)="applyFilters()"> 
-          <!-- Consider using debounce if tag input is frequent -->
-      </div>
-    <!-- Sort By -->
-    <div class="col-sm-6 col-md-4 col-lg-2">
-      <label for="sortBySelect" class="visually-hidden">Sort By</label>
-      <select class="form-select" id="sortBySelect" [(ngModel)]="sortBy" (ngModelChange)="applyFilters()">
-        <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
-      </select>
-    </div>
-    <!-- Sort Direction -->
-    <div class="col-auto">
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="sortDescendingCheck" [(ngModel)]="sortDescending" (ngModelChange)="applyFilters()" [disabled]="!sortBy">
-        <label class="form-check-label" for="sortDescendingCheck">
-          Descending
-        </label>
+  <!-- Header Section -->
+  <section class="articles-header py-5 text-center bg-info text-white">
+    <div class="container">
+      <h1 class="display-5 fw-bold mb-3" data-aos="fade-down">Health Articles & Insights</h1>
+      <p class="lead mb-4 w-75 mx-auto" data-aos="fade-down" data-aos-delay="100">Stay informed with the latest health news, tips, and research.</p>
+      <div class="d-flex justify-content-center" data-aos="fade-up" data-aos-delay="200">
+        <!-- Add Article Button -->
+        <button *ngIf="canAddArticle()" class="btn btn-light me-3" routerLink="/article/add">
+          <i class="fas fa-plus me-1"></i> Add New Article
+        </button>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Article List -->
-  <div *ngIf="articles$ | async as articles; else loading">
-    <div *ngIf="articles.length > 0; else noArticles">
-      <div class="row">
-        <div class="col-md-6 mb-4" *ngFor="let article of articles">
-          <div class="card h-100">
-            <img *ngIf="article.imageUrl" [src]="article.imageUrl" class="card-img-top article-image" alt="{{ article.title }}">
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">{{ article.title }}</h5>
-              <div *ngIf="article.tags && article.tags.length > 0" class="mb-2">
-                <span *ngFor="let tag of article.tags" class="badge bg-secondary me-1">{{ tag }}</span>
-              </div>
-              <p class="card-text flex-grow-1" [innerHTML]="getContentPreview(article.summary)"></p>
-              <a [routerLink]="['/article', article.id]" class="btn btn-primary mt-auto">Read More</a>
-            </div>
+  <!-- Filters and Content Section -->
+  <section class="container py-5">
+    <!-- Filtering and Sorting Controls -->
+    <div class="filters-bar card shadow-sm mb-5 p-3 bg-light" data-aos="fade-up">
+      <div class="row g-3 align-items-center">
+        <!-- Search -->
+        <div class="col-lg-4 col-md-6">
+          <div class="input-group">
+            <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Search articles..." 
+              [ngModel]="searchTerm" 
+              (ngModelChange)="onSearchChange($event)">
+          </div>
+        </div>
+        <!-- Category -->
+        <div class="col-lg-2 col-md-6">
+          <select class="form-select" [(ngModel)]="selectedCategory" (ngModelChange)="applyFilters()">
+            <option [ngValue]="null">All Categories</option>
+            <option *ngFor="let category of categories" [ngValue]="category.id">{{ category.name }}</option>
+          </select>
+        </div>
+        <!-- Tag -->
+        <div class="col-lg-3 col-md-6">
+           <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Filter by tag..." 
+              [(ngModel)]="selectedTag" 
+              (ngModelChange)="applyFilters()">
+        </div>
+        <!-- Sort By -->
+        <div class="col-lg-2 col-md-4">
+          <select class="form-select" [(ngModel)]="sortBy" (ngModelChange)="applyFilters()">
+             <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
+          </select>
+        </div>
+        <!-- Sort Direction -->
+        <div class="col-lg-1 col-md-2 text-center">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="sortDescendingCheck" [(ngModel)]="sortDescending" (ngModelChange)="applyFilters()" [disabled]="!sortBy">
+            <label class="form-check-label small" for="sortDescendingCheck">Desc</label>
           </div>
         </div>
       </div>
-
-      <!-- Pagination Controls -->
-<nav aria-label="Article navigation" class="mt-4 d-flex justify-content-center">
-  <ul class="pagination">
-    <li class="page-item" [class.disabled]="currentPage === 1">
-      <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
-    </li>
-    <!-- Display current page number -->
-    <li class="page-item">
-      <span class="page-link">Page {{ currentPage }}</span>
-    </li>
-    <li class="page-item" [class.disabled]="!hasMorePages">
-      <button class="page-link" (click)="nextPage()" [disabled]="!hasMorePages">Next</button>
-    </li>
-  </ul>
-</nav>
-
-
     </div>
-    <ng-template #noArticles>
-      <p>No articles found matching your criteria.</p>
+
+    <!-- Article List -->
+    <div *ngIf="articles$ | async as articles; else loading">
+      <div *ngIf="articles.length > 0; else noArticles">
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-4" *ngFor="let article of articles" data-aos="fade-up">
+            <div class="card h-100 article-card shadow-sm border-0">
+              <img 
+                *ngIf="article.imageUrl" 
+                [src]="article.imageUrl" 
+                class="card-img-top article-image" 
+                alt="{{ article.title }}"
+                onerror="this.style.display='none'" 
+              />
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-semibold mb-2">{{ article.title }}</h5>
+                <!-- Tags -->
+                <div *ngIf="article.tags && article.tags.length > 0" class="mb-2">
+                  <span *ngFor="let tag of article.tags" class="badge bg-secondary me-1 fw-normal">{{ tag }}</span>
+                </div>
+                <!-- Summary -->
+                <p class="card-text small text-muted flex-grow-1" [innerHTML]="getContentPreview(article.summary)"></p>
+                <!-- Read More Button -->
+                <a [routerLink]="['/article', article.id]" class="btn btn-primary btn-sm mt-auto align-self-start">Read More <i class="fa-solid fa-arrow-right ms-1"></i></a>
+              </div>
+              <!-- Date -->
+              <div class="card-footer bg-transparent border-top-0 text-muted small">
+                <span *ngIf="article.publishedDate; else noDate">
+                  Published: {{ article.publishedDate | date:'mediumDate' }}
+                </span>
+                <ng-template #noDate>Not published yet</ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination Controls -->
+        <nav aria-label="Article navigation" class="mt-5 d-flex justify-content-center">
+          <ul class="pagination shadow-sm">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </button>
+            </li>
+            <li class="page-item disabled"><span class="page-link text-muted">Page {{ currentPage }}</span></li>
+            <li class="page-item" [class.disabled]="!hasMorePages">
+              <button class="page-link" (click)="nextPage()" [disabled]="!hasMorePages" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+
+      </div>
+      <ng-template #noArticles>
+        <div class="text-center py-5">
+          <i class="fa-solid fa-file-lines fa-3x text-muted mb-3"></i>
+          <p class="text-muted">No articles found matching your criteria.</p>
+        </div>
+      </ng-template>
+    </div>
+    <ng-template #loading>
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2 text-muted">Loading articles...</p>
+      </div>
     </ng-template>
-  </div>
-  <ng-template #loading>
-    <p>Loading articles...</p>
-  </ng-template>
+  </section>
+
 </div>
 
+<style>
+  .articles-header {
+    background-color: #17a2b8;
+  }
+  .article-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  }
+  .article-image {
+    height: 180px;
+    object-fit: cover;
+  }
+  .filters-bar .input-group-text {
+      background-color: #e9ecef;
+      border-right: 0;
+  }
+  .filters-bar .form-control, .filters-bar .form-select {
+      border-left: 0;
+  }
+  .filters-bar .form-control:focus, .filters-bar .form-select:focus {
+      box-shadow: none;
+      border-color: #ced4da;
+  }
+</style>

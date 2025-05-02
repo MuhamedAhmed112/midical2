@@ -16,6 +16,7 @@ export interface Article {
   authorName?: string;
   authorId?: string;
   summary: string;
+  publishedDate: Date | string;
 }
 
 // Interface for pagination/filter parameters

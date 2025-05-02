@@ -20,29 +20,31 @@ import { DoctorSearchComponent } from './layout/pages/doctor-search/doctor-searc
 import { DoctorAppointmentsComponent } from './layout/pages/doctor-appointments/doctor-appointments.component';
 import { AddArticleComponent } from './layout/pages/add-article/add-article.component'; // Import AddArticleComponent
 import { EditArticleComponent } from './layout/pages/edit-article/edit-article.component'; // Import EditArticleComponent
-import { RoleAuthGuard } from './shared/guards/role-auth.guard';
+import { RoleAuthGuard } from './shared/guards/role-auth.guard'; // RoleAuthGuard is already imported
 import { DrugReminderComponent } from './layout/pages/drug-reminder/drug-reminder.component'; // Import the new component
 import { DrugDetailsComponent } from './layout/additions/drug-details/drug-details.component';
+import { ProfileComponent } from './layout/pages/profile/profile.component'; // Import ProfileComponent
 
 export const routes: Routes = [
   {path: '', component:HomeComponent },
   {path: 'home' , component: HomeComponent   },
   {path: 'login' , component: LoginComponent },
   {path: 'signup' , component: SignupComponent },
-  {path: 'Appointment' , component: AppointmentComponent }, // Consider renaming or clarifying this route
-  {path: 'doctors' , component: DoctorSearchComponent }, // Added route for doctor search
-  {path: 'doctor-appointments/:id' , component: DoctorAppointmentsComponent }, // Added route for specific doctor appointments
+  {path: 'profile', component: ProfileComponent, canActivate: [RoleAuthGuard] }, // Added profile route, protected by guard
+  {path: 'Appointment' , component: AppointmentComponent, canActivate: [RoleAuthGuard] }, // Protected appointment route
+  {path: 'doctors' , component: DoctorSearchComponent }, 
+  {path: 'doctor-appointments/:id' , component: DoctorAppointmentsComponent, canActivate: [RoleAuthGuard] }, // Protected doctor appointments
   {path: 'Medicines' , component: MedicinsComponent   },
-  {path: 'drug-reminder', component: DrugReminderComponent, canActivate: [RoleAuthGuard] }, // Added route for drug reminder, protected by guard
+  {path: 'drug-reminder', component: DrugReminderComponent, canActivate: [RoleAuthGuard] }, 
   {path: 'Research' , component: ReSearchComponent },
   {path: 'Careers' , component: CareersComponent  },
   {path: 'drugDetails' , component: DrugDetailsComponent},
   {path: 'Commitment' , component: CommitmentComponent  },
   {path: 'Contact_Us' , component: ContactUsComponent },
-  {path: 'article' , component: ArticleComponent }, // Route for the list page (Changed from Articles)
-  {path: 'article/add' , component: AddArticleComponent ,canActivate: [RoleAuthGuard]}, // Route for adding an article
-  {path: 'article/edit/:id' , component: EditArticleComponent }, // Route for editing an article
-  {path: 'article/:id' , component: ArticleDetailComponent }, // Route for the detail page
+  {path: 'article' , component: ArticleComponent }, 
+  {path: 'article/add' , component: AddArticleComponent ,canActivate: [RoleAuthGuard]}, 
+  {path: 'article/edit/:id' , component: EditArticleComponent, canActivate: [RoleAuthGuard] }, // Protected edit article
+  {path: 'article/:id' , component: ArticleDetailComponent }, 
   {path: 'ForgotPassword' , component: ForgotPasswordComponent  },
   {path: 'resetPass' , component:ResetPassComponent},
   {path: 'signupinfo' , component:SignupinfoComponent},

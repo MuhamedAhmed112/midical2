@@ -1,0 +1,118 @@
+<div class="container mt-5">
+  <h2>My Profile</h2>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Profile Content -->
+  <div *ngIf="!isLoading && !errorMessage && profile">
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs mb-3">
+      <li class="nav-item">
+        <button class="nav-link" [class.active]="activeTab === 'info'" (click)="setActiveTab('info')">Information</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" [class.active]="activeTab === 'change-email'" (click)="setActiveTab('change-email')">Change Email</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" [class.active]="activeTab === 'change-password'" (click)="setActiveTab('change-password')">Change Password</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" [class.active]="activeTab === 'change-image'" (click)="setActiveTab('change-image')">Update Profile Image</button>
+      </li>
+      <!-- Conditionally show Sessions tab only if profile has 'specialization' property (indicative of Doctor) -->
+      <li class="nav-item" *ngIf="profile && 'specialization' in profile">
+        <button class="nav-link" [class.active]="activeTab === 'sessions'" (click)="setActiveTab('sessions')">Manage Sessions</button>
+      </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Information Tab -->
+      <div *ngIf="activeTab === 'info'">
+        <h4>Basic Information</h4>
+        <div class="mb-3">
+          <!-- Use SVG fallback -->
+          <img [src]="profile.profileImageUrl || 'assets/images/default-avatar.svg'" 
+               alt="Profile Image" 
+               class="img-thumbnail mb-2" 
+               style="max-width: 150px;" 
+               onerror="this.src='assets/images/default-avatar.svg'">
+        </div>
+        <p><strong>Full Name:</strong> {{ profile.fullName }}</p>
+        <p><strong>Email:</strong> {{ profile.email }}</p>
+
+       <!-- Patient Specific Info -->
+<div *ngIf="userProfile">
+  <p><strong>Date of Birth:</strong> {{ userProfile.dob | date:'longDate' }}</p>
+  <p><strong>Questions Asked:</strong> {{ userProfile.questionsCount }}</p>
+  <p><strong>Upcoming Appointments:</strong> {{ userProfile.upcomingAppointments }}</p>
+</div>
+
+<!-- Doctor Specific Info -->
+<div *ngIf="doctorProfile">
+  <p><strong>Specialization:</strong> {{ doctorProfile.specialization }}</p>
+  <p><strong>Years of Experience:</strong> {{ doctorProfile.yearsOfExperience }}</p>
+  <p><strong>Rating:</strong> {{ doctorProfile.rating }}/5 ({{ doctorProfile.totalReviews }} reviews)</p>
+  <p><strong>Bio:</strong> {{ doctorProfile.bio }}</p>
+  <p><strong>Account Status:</strong> {{ doctorProfile.accountStatus }}</p>
+  <p><strong>Certification:</strong>
+    <a *ngIf="doctorProfile.certificationDocumentUrl" [href]="doctorProfile.certificationDocumentUrl" target="_blank">View Document</a>
+    <span *ngIf="!doctorProfile.certificationDocumentUrl">Not Available</span>
+  </p>
+  <p><strong>Total Answers:</strong> {{ doctorProfile.totalAnswers }}</p>
+  <p><strong>Total Appointments:</strong> {{ doctorProfile.totalAppointments }}</p>
+  <p><strong>Completed Appointments:</strong> {{ doctorProfile.completedAppointments }}</p>
+  <p><strong>Upcoming Appointments:</strong> {{ doctorProfile.upcomingAppointments }}</p>
+</div>
+      </div>
+
+      <!-- Change Email Tab -->
+      <div *ngIf="activeTab === 'change-email'">
+        <h4>Change Email</h4>
+        <!-- Placeholder for form -->
+        <p>Email change form placeholder.</p>
+        <button class="btn btn-primary" (click)="updateEmail()">Update Email (Placeholder)</button>
+      </div>
+
+      <!-- Change Password Tab -->
+      <div *ngIf="activeTab === 'change-password'">
+        <h4>Change Password</h4>
+        <!-- Placeholder for form -->
+        <p>Password change form placeholder.</p>
+        <button class="btn btn-primary" (click)="updatePassword()">Update Password (Placeholder)</button>
+      </div>
+
+      <!-- Change Profile Image Tab -->
+      <div *ngIf="activeTab === 'change-image'">
+        <h4>Update Profile Image</h4>
+        <!-- Placeholder for form -->
+        <p>Profile image upload placeholder.</p>
+        <!-- Corrected event handling -->
+        <input type="file" (change)="onFileSelected($event)">
+        <!-- Corrected function call and disabled state -->
+        <button class="btn btn-primary mt-2" (click)="updateProfileImage()" [disabled]="!profileImageFile">Upload Image</button>
+      </div>
+
+      <!-- Manage Sessions Tab (Doctor Only - Check if 'specialization' exists) -->
+      <div *ngIf="activeTab === 'sessions' && profile && 'specialization' in profile">
+        <h4>Manage Active Sessions</h4>
+        <!-- Placeholder for session list -->
+        <p>Session management placeholder.</p>
+        <button class="btn btn-danger me-2" (click)="terminateSession(1)">Terminate Session 1 (Placeholder)</button>
+        <button class="btn btn-danger" (click)="terminateAllSessions()">Terminate All Other Sessions (Placeholder)</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
