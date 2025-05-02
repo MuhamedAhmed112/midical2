@@ -6,7 +6,7 @@ import { Observable, BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { DrugService, Drug, PaginatedDrugs } from '../../../shared/services/drug/drug.service'; // Adjust path as needed
 import { Authiserviceservice } from '../../../shared/services/authntication/Authiservice.service'; // Import Auth Service
-
+import { jwtDecode } from 'jwt-decode';
 @Component({
   selector: 'app-medicins',
   standalone: true,
@@ -58,19 +58,24 @@ export class MedicinsComponent implements OnInit, OnDestroy {
   }
 
   checkAdminRole(): void {
-    // Subscribe to userData changes to get the role
-    this.authService.userData.subscribe(userData => {
-      const roleClaim = userData ? (userData.role || userData['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']) : null;
-      if (roleClaim) {
+    const token = this.authService.getToken();
+    if (token) {
+      try {
+        const decodedToken: any = jwtDecode(token); // استخدم jwtDecode هنا
+        const roleClaim = decodedToken['roles'] || decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+  
         this.isAdmin = Array.isArray(roleClaim) ? roleClaim.includes('Admin') : roleClaim === 'Admin';
-      } else {
+  
+        console.log('Decoded Token:', decodedToken);
+        console.log('Is Admin:', this.isAdmin);
+      } catch (error) {
+        console.error('Error decoding token:', error);
         this.isAdmin = false;
       }
-      console.log('Medicins User Data:', userData);
-      console.log('Medicins Is Admin:', this.isAdmin);
-    });
+    } else {
+      this.isAdmin = false;
+    }
   }
-
   fetchDrugs(): void {
     this.isLoading = true;
     this.error = null;

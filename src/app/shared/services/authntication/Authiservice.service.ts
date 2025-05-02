@@ -40,7 +40,10 @@ export class Authiserviceservice {
       this.isLoggedIn = true;
     }
   }
-
+  getToken(): string | null {
+    return this.token || localStorage.getItem('userToken');
+  }
+  
   logout() {
     localStorage.removeItem('userToken');
     this.userData.next(null);

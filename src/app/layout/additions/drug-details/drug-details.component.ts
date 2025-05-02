@@ -5,6 +5,7 @@ import { DrugService, Drug } from '../../../shared/services/drug/drug.service'; 
 import { Authiserviceservice } from '../../../shared/services/authntication/Authiservice.service'; // Import Auth Service
 import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-drug-details',
@@ -69,22 +70,24 @@ export class DrugDetailsComponent implements OnInit {
   }
 
   checkAdminRole(): void {
-    // Subscribe to userData changes to get the role
-    this.authService.userData.subscribe(userData => {
-      // Assuming the role is stored in a property named 'role' (adjust if different)
-      // Common JWT role claims: 'role', 'roles', or custom claims like 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
-      const roleClaim = userData ? (userData.role || userData['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']) : null;
-      if (roleClaim) {
-        // Check if the role is 'Admin' (case-insensitive check might be safer)
+    const token = this.authService.getToken();
+    if (token) {
+      try {
+        const decodedToken: any = jwtDecode(token); // استخدم jwtDecode هنا
+        const roleClaim = decodedToken['roles'] || decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+  
         this.isAdmin = Array.isArray(roleClaim) ? roleClaim.includes('Admin') : roleClaim === 'Admin';
-      } else {
+  
+        console.log('Decoded Token:', decodedToken);
+        console.log('Is Admin:', this.isAdmin);
+      } catch (error) {
+        console.error('Error decoding token:', error);
         this.isAdmin = false;
       }
-      console.log('User Data:', userData);
-      console.log('Is Admin:', this.isAdmin);
-    });
+    } else {
+      this.isAdmin = false;
+    }
   }
-
   deleteDrug(): void {
     if (!this.isAdmin || !this.drugId) {
       console.error('Deletion not allowed or drug ID missing.');
