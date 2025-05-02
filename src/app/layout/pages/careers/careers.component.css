@@ -1,0 +1,36 @@
+ img{
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+}
+
+.careers h2{
+  color: #61B1B2;
+}
+ p {
+  color: #617878;
+}
+
+.join-btn {
+  background: linear-gradient(to bottom right, #a8e6cf, #b2f2bb);
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 30px;
+  font-size: 20px;
+  transition: background 0.3s ease;
+}
+
+.join-btn:hover {
+  background: linear-gradient(to bottom right, #90d9c1, #a2e9aa);
+}
+
+.workWithUs h2{
+  color: #69B879;
+}
+
+a{
+  text-decoration: none;
+  color: #61B1B273;
+}
