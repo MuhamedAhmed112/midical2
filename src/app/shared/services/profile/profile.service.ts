@@ -81,8 +81,8 @@ export class ProfileService {
   }
 
   terminateSession(sessionId: number): Observable<any> {
-    // Assuming backend expects { sessionId: number } in JSON body
-    return this.http.post(`${this.apiUrl}/api/Sessions/terminate`, { sessionId });
+    const params = { sessionId: sessionId.toString() };
+  return this.http.post(`${this.apiUrl}/api/Sessions/terminate`, null, { params });
   }
 
   terminateAllSessions(): Observable<any> {

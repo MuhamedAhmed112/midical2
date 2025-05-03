@@ -7,7 +7,9 @@ import { environment } from '../../../../environments/environment';
 export interface Drug {
   id: number;
   name: string;
-  description: string;
+  interaction : string;
+  description : string;
+  sideEffect : string;
   imageUrl?: string;
   dosage?: string;
   // Add other relevant fields based on the actual API response

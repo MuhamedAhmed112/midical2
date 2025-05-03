@@ -1,6 +1,6 @@
 
 .buttoncolor{
-    color: white;
+    color: rgb(69, 79, 183);
     background-color: var(--works-text-color ) !important;
  }
  .buttoncolor:hover{

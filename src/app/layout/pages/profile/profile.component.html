@@ -32,7 +32,7 @@
         <button class="nav-link" [class.active]="activeTab === 'change-image'" (click)="setActiveTab('change-image')">Update Profile Image</button>
       </li>
       <!-- Conditionally show Sessions tab only if profile is Doctor -->
-      <li class="nav-item" *ngIf="isDoctor">
+      <li class="nav-item">
         <button class="nav-link" [class.active]="activeTab === 'sessions'" (click)="setActiveTab('sessions')">Manage Sessions</button>
       </li>
     </ul>
@@ -177,7 +177,7 @@
       </div>
 
       <!-- Manage Sessions Tab (Doctor Only) -->
-      <div *ngIf="activeTab === 'sessions' && isDoctor" class="session-list">
+      <div *ngIf="activeTab === 'sessions'" class="session-list">
         <h4>Manage Active Sessions</h4>
         <div *ngIf="isLoadingSessions" class="text-center my-4">
           <div class="spinner-border spinner-border-sm text-secondary" role="status">
@@ -188,14 +188,21 @@
           <ul class="list-group mb-3">
             <li *ngFor="let session of sessions" class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-sm-center">
               <div class="session-details mb-2 mb-sm-0">
-                <div><strong>Device:</strong> <span>{{ session.userAgent }}</span></div>
+                <div><strong>Device:</strong> <span>{{ session.userAgent }}</span>
+                  <span *ngIf="session.sessionToken === currentSessionToken" class="badge bg-success ms-2">This device</span>
+                </div>
                 <div><strong>IP Address:</strong> <span>{{ session.ipAddress }}</span></div>
                 <div><strong>Last Activity:</strong> <span>{{ session.lastActivity | date:'medium' }}</span></div>
                 <!-- <div><strong>Expires At:</strong> <span>{{ session.expiryAt | date:'medium' }}</span></div> -->
               </div>
-              <button class="btn btn-sm btn-warning align-self-start align-self-sm-center" (click)="terminateSession(session.id)" [disabled]="!session.isActive">
-                {{ session.isActive ? 'Terminate' : 'Terminated' }}
-              </button>
+              <button
+  class="btn btn-sm"
+  [ngClass]="session.sessionToken === currentSessionToken ? 'btn-danger' : 'btn-warning'"
+  (click)="session.sessionToken === currentSessionToken ? logout() : terminateSession(session.id)"
+  [disabled]="!session.isActive">
+  {{ session.sessionToken === currentSessionToken ? 'Logout (This Device)' : (session.isActive ? 'Terminate' : 'Terminated') }}
+</button>
+
             </li>
           </ul>
           <button class="btn btn-danger" (click)="terminateAllSessions()">Terminate All Other Sessions</button>
