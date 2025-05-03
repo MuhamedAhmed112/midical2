@@ -24,16 +24,15 @@ export class AppComponent {
 
   darkMode:boolean=false
 
-  toggleDarkmode(){
-    this.darkMode = !this.darkMode
+toggleDarkmode() {
+  this.darkMode = !this.darkMode;
 
-    if(this.darkMode){
-      document.body.classList.add('dark-mode')
-    }else{
-      document.body.classList.remove('dark-mode')
-
-    }
+  if (this.darkMode) {
+    document.body.setAttribute('data-bs-theme', 'dark');
+  } else {
+    document.body.setAttribute('data-bs-theme', 'light');
   }
+}
 
 
 
