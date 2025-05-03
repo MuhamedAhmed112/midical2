@@ -8,10 +8,12 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor() {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Get the token from local storage
-    const token = localStorage.getItem('userToken');
-
-    // If the token exists, clone the request and add the Authorization header
+    let token: string | null = null;
+  
+    if (typeof window !== 'undefined') {
+      token = localStorage.getItem('userToken');
+    }
+  
     if (token) {
       const headers = new HttpHeaders({
         'Authorization': `Bearer ${token}`
@@ -19,9 +21,9 @@ export class AuthInterceptor implements HttpInterceptor {
       const clonedReq = req.clone({ headers });
       return next.handle(clonedReq);
     }
-
-    // If no token, pass the original request
+  
     return next.handle(req);
   }
+  
 }
 
