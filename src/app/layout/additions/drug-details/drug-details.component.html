@@ -16,7 +16,7 @@
   <div *ngIf="drug && !isLoading && !error" class="row align-items-start">
     <!-- Image Section -->
     <div class="col-md-4">
-      <img [src]="drug.imageUrl || '../../../../assets/images/default-medicine.jpg'" 
+      <img [src]="drug.DrugImage || '../../../../assets/images/default-medicine.jpg'" 
            alt="{{ drug.name }}" 
            class="img-fluid rounded shadow-sm"
            onerror="this.src='../../../../assets/images/default-medicine.jpg'">

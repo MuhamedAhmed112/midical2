@@ -39,6 +39,9 @@
     <div class="mb-3">
       <label for="tags" class="form-label">Tags (comma-separated)</label>
       <input type="text" id="tags" class="form-control" formControlName="tags">
+      <div *ngIf="articleForm.get('tags')?.invalid && articleForm.get('tags')?.touched" class="invalid-feedback">
+        Tags is required.
+      </div>
     </div>
 
     <!-- Content (TinyMCE Integrated) -->
@@ -65,6 +68,6 @@
       <img *ngIf="imagePreviewUrl" [src]="imagePreviewUrl" alt="Image Preview" class="img-thumbnail mt-2" style="max-height: 200px;">
     </div>
 
-    <button type="submit" class="btn btn-primary" [disabled]="articleForm.invalid">Submit Article</button>
+    <button type="submit" class="btn btn-primary mb-2" [disabled]="articleForm.invalid">Submit Article</button>
   </form>
 </div>

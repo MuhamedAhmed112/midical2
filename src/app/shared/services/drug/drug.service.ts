@@ -10,7 +10,7 @@ export interface Drug {
   interaction : string;
   description : string;
   sideEffect : string;
-  imageUrl?: string;
+  DrugImage?: string;
   dosage?: string;
   // Add other relevant fields based on the actual API response
 }
@@ -77,5 +77,6 @@ export class DrugService {
   addReminder(payload: ReminderPayload): Observable<any> {
     return this.http.post<any>(`${this.reminderApiUrl}/Add`, payload);
   }
+  
 }
 

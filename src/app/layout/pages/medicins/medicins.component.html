@@ -54,7 +54,7 @@
         <div *ngFor="let drug of drugs" class="col-md-6 col-lg-4 col-xl-3">
           <div class="card h-100 drug-card shadow-sm border-0">
             <img
-              [src]="drug.imageUrl || 'assets/images/default-medicine.jpg'"
+              [src]="drug.DrugImage || 'assets/images/default-medicine.jpg'"
               class="card-img-top drug-image"
               alt="{{ drug.name }}"
               onerror="this.src='assets/images/default-medicine.jpg'"

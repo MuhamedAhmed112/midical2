@@ -100,7 +100,7 @@ export class AddArticleComponent implements OnInit, OnDestroy { // Implement OnD
       title: ['', Validators.required],
       summary: ['', Validators.required],
       category: [null, Validators.required],
-      tags: [''],
+      tags: ['',Validators.required],
       content: ['', Validators.required],
       image: [null, Validators.required]
     });

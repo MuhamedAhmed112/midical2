@@ -134,7 +134,7 @@ export class MedicinsComponent implements OnInit, OnDestroy {
 
   // Method to navigate to the Add Drug page
   navigateToAddDrug(): void {
-    this.router.navigate(['/medicines/add']); // Navigate to the add drug route
+    this.router.navigate(['/Add-drug']); // Navigate to the add drug route
   }
 }
 
