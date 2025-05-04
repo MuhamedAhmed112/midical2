@@ -19,7 +19,7 @@ export class RoleAuthGuard implements CanActivate {
     }
 
     // Ensure roles array exists and user has roles property
-    const allowedRoles = ['Admin', 'Doctor']; // Case-sensitive match with token roles
+    const allowedRoles = ['Admin', 'Doctor','Patient']; // Case-sensitive match with token roles
     const hasAccess = user.roles?.some((role: string) => allowedRoles.includes(role)); // Add explicit type 'string' for role
 
     if (!hasAccess) {

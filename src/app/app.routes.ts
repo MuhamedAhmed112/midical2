@@ -1,3 +1,4 @@
+import { AddDrugComponent } from './layout/add-drug/add-drug.component';
 import { ArticleComponent } from './layout/pages/article/article.component';
 import { DoctorsignupComponent } from './layout/pages/doctorsignup/doctorsignup.component';
 import { DoctorloginComponent } from './layout/pages/doctorlogin/doctorlogin.component';
@@ -38,7 +39,7 @@ export const routes: Routes = [
   {path: 'drug-reminder', component: DrugReminderComponent, canActivate: [RoleAuthGuard] }, 
   {path: 'Research' , component: ReSearchComponent },
   {path: 'Careers' , component: CareersComponent  },
-  {path: 'drugDetails' , component: DrugDetailsComponent},
+  {path: 'drugDetails/:id' , component: DrugDetailsComponent},
   {path: 'Commitment' , component: CommitmentComponent  },
   {path: 'Contact_Us' , component: ContactUsComponent },
   {path: 'article' , component: ArticleComponent }, 
@@ -50,6 +51,7 @@ export const routes: Routes = [
   {path: 'signupinfo' , component:SignupinfoComponent},
   {path: 'doctorlogin' , component:DoctorloginComponent},
   {path: 'doctorsignup' , component:DoctorsignupComponent},
+  {path: 'Add-drug' , component:AddDrugComponent},
 
 
 ];

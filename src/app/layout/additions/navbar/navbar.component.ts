@@ -62,5 +62,18 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this._Authiserviceservice.logout();
     this.router.navigate(['/home']); 
   }
+
+    darkMode: boolean = false;
+
+    toggleDarkmode() {
+      this.darkMode = !this.darkMode;
+
+      if (this.darkMode) {
+        document.body.setAttribute('data-bs-theme', 'dark');
+      } else {
+        document.body.setAttribute('data-bs-theme', 'light');
+      }
+    }
 }
+ 
 

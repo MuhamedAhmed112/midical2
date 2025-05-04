@@ -1,14 +1,14 @@
 <div class="articles-page">
 
   <!-- Header Section -->
-  <section class="articles-header py-5 text-center bg-info text-white">
+  <section class="articles-header py-5 text-center text-white">
     <div class="container">
-      <h1 class="display-5 fw-bold mb-3" data-aos="fade-down">Health Articles & Insights</h1>
+      <h1 class="display-5 mb-3" data-aos="fade-down">Health Articles & Insights</h1>
       <p class="lead mb-4 w-75 mx-auto" data-aos="fade-down" data-aos-delay="100">Stay informed with the latest health news, tips, and research.</p>
       <div class="d-flex justify-content-center" data-aos="fade-up" data-aos-delay="200">
         <!-- Add Article Button -->
-        <button *ngIf="canAddArticle()" class="btn btn-light me-3" routerLink="/article/add">
-          <i class="fas fa-plus me-1"></i> Add New Article
+        <button *ngIf="canAddArticle()" class="btn btn-light btn-lg me-3 shadow-sm" routerLink="/article/add">
+          <i class="fas fa-plus me-2"></i> Add New Article
         </button>
       </div>
     </div>
@@ -17,17 +17,17 @@
   <!-- Filters and Content Section -->
   <section class="container py-5">
     <!-- Filtering and Sorting Controls -->
-    <div class="filters-bar card shadow-sm mb-5 p-3 bg-light" data-aos="fade-up">
+    <div class="filters-bar card card-body shadow-sm mb-5 p-3 bg-body-tertiary" data-aos="fade-up">
       <div class="row g-3 align-items-center">
         <!-- Search -->
         <div class="col-lg-4 col-md-6">
           <div class="input-group">
             <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input 
-              type="text" 
-              class="form-control" 
-              placeholder="Search articles..." 
-              [ngModel]="searchTerm" 
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search articles..."
+              [ngModel]="searchTerm"
               (ngModelChange)="onSearchChange($event)">
           </div>
         </div>
@@ -40,11 +40,11 @@
         </div>
         <!-- Tag -->
         <div class="col-lg-3 col-md-6">
-           <input 
-              type="text" 
-              class="form-control" 
-              placeholder="Filter by tag..." 
-              [(ngModel)]="selectedTag" 
+           <input
+              type="text"
+              class="form-control"
+              placeholder="Filter by tag..."
+              [(ngModel)]="selectedTag"
               (ngModelChange)="applyFilters()">
         </div>
         <!-- Sort By -->
@@ -55,7 +55,7 @@
         </div>
         <!-- Sort Direction -->
         <div class="col-lg-1 col-md-2 text-center">
-          <div class="form-check form-switch">
+          <div class="form-check form-switch d-inline-block align-middle">
             <input class="form-check-input" type="checkbox" role="switch" id="sortDescendingCheck" [(ngModel)]="sortDescending" (ngModelChange)="applyFilters()" [disabled]="!sortBy">
             <label class="form-check-label small" for="sortDescendingCheck">Desc</label>
           </div>
@@ -68,29 +68,29 @@
       <div *ngIf="articles.length > 0; else noArticles">
         <div class="row g-4">
           <div class="col-md-6 col-lg-4" *ngFor="let article of articles" data-aos="fade-up">
-            <div class="card h-100 article-card shadow-sm border-0">
-              <img 
-                *ngIf="article.imageUrl" 
-                [src]="article.imageUrl" 
-                class="card-img-top article-image" 
+            <div class="card h-100 article-card shadow-sm">
+              <img
+                *ngIf="article.imageUrl"
+                [src]="article.imageUrl"
+                class="card-img-top article-image"
                 alt="{{ article.title }}"
-                onerror="this.style.display='none'" 
+                onerror="this.style.display='none'"
               />
               <div class="card-body d-flex flex-column">
-                <h5 class="card-title fw-semibold mb-2">{{ article.title }}</h5>
+                <h5 class="card-title mb-2">{{ article.title }}</h5>
                 <!-- Tags -->
                 <div *ngIf="article.tags && article.tags.length > 0" class="mb-2">
-                  <span *ngFor="let tag of article.tags" class="badge bg-secondary me-1 fw-normal">{{ tag }}</span>
+                  <span *ngFor="let tag of article.tags" class="badge text-bg-secondary me-1 fw-normal">{{ tag }}</span>
                 </div>
                 <!-- Summary -->
-                <p class="card-text small text-muted flex-grow-1" [innerHTML]="getContentPreview(article.summary)"></p>
+                <p class="card-text small text-body-secondary flex-grow-1" [innerHTML]="getContentPreview(article.summary)"></p>
                 <!-- Read More Button -->
                 <a [routerLink]="['/article', article.id]" class="btn btn-primary btn-sm mt-auto align-self-start">Read More <i class="fa-solid fa-arrow-right ms-1"></i></a>
               </div>
               <!-- Date -->
-              <div class="card-footer bg-transparent border-top-0 text-muted small">
+              <div class="card-footer text-body-secondary small">
                 <span *ngIf="article.publishedDate; else noDate">
-                  Published: {{ article.publishedDate | date:'mediumDate' }}
+                  <i class="fa-regular fa-calendar-alt me-1"></i> Published: {{ article.publishedDate | date:'mediumDate' }}
                 </span>
                 <ng-template #noDate>Not published yet</ng-template>
               </div>
@@ -99,14 +99,15 @@
         </div>
 
         <!-- Pagination Controls -->
-        <nav aria-label="Article navigation" class="mt-5 d-flex justify-content-center">
+        <nav *ngIf="hasMorePages || currentPage > 1" aria-label="Article navigation" class="mt-5 d-flex justify-content-center">
           <ul class="pagination shadow-sm">
             <li class="page-item" [class.disabled]="currentPage === 1">
               <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
               </button>
             </li>
-            <li class="page-item disabled"><span class="page-link text-muted">Page {{ currentPage }}</span></li>
+            <!-- Optional: Add page numbers if needed -->
+            <li class="page-item disabled"><span class="page-link text-body-secondary">Page {{ currentPage }}</span></li>
             <li class="page-item" [class.disabled]="!hasMorePages">
               <button class="page-link" (click)="nextPage()" [disabled]="!hasMorePages" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
@@ -117,48 +118,21 @@
 
       </div>
       <ng-template #noArticles>
-        <div class="text-center py-5">
-          <i class="fa-solid fa-file-lines fa-3x text-muted mb-3"></i>
-          <p class="text-muted">No articles found matching your criteria.</p>
+        <div class="text-center py-5 no-articles-container">
+          <i class="fa-solid fa-file-lines fa-3x mb-3"></i>
+          <p>No articles found matching your criteria.</p>
         </div>
       </ng-template>
     </div>
     <ng-template #loading>
-      <div class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
+      <div class="text-center py-5 loading-container">
+        <div class="spinner-border" role="status" style="width: 3rem; height: 3rem;">
           <span class="visually-hidden">Loading...</span>
         </div>
-        <p class="mt-2 text-muted">Loading articles...</p>
+        <p class="mt-3">Loading articles...</p>
       </div>
     </ng-template>
   </section>
 
 </div>
 
-<style>
-  .articles-header {
-    background-color: #17a2b8;
-  }
-  .article-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  .article-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-  }
-  .article-image {
-    height: 180px;
-    object-fit: cover;
-  }
-  .filters-bar .input-group-text {
-      background-color: #e9ecef;
-      border-right: 0;
-  }
-  .filters-bar .form-control, .filters-bar .form-select {
-      border-left: 0;
-  }
-  .filters-bar .form-control:focus, .filters-bar .form-select:focus {
-      box-shadow: none;
-      border-color: #ced4da;
-  }
-</style>
